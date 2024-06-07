@@ -20,7 +20,7 @@ header .logo {
 }
 
 header .menu {
-  font-size: 36px; /* フォントサイズを大きくする */
+  font-size: 36px;
   cursor: pointer;
 }
 
@@ -83,15 +83,24 @@ main {
   box-sizing: border-box; /* パディングを含む高さ */
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* ボタン間のスペースを設定 */
+  margin-top: 40px; /* 検索バーからのスペースを増やす */
+}
+
 .action-button {
-  padding: 20px 40px; /* ボタンのパディングを大きくする */
+  padding: 20px 40px;
   font-size: 24px;
-  margin: 10px 20px; /* ボタン間のマージンを増やす */
   cursor: pointer;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #f0f0f0;
   transition: background-color 0.3s;
+  text-decoration: none; /* 下線を消す */
+  color: inherit; /* 親要素の色を継承 */
+  display: inline-block; /* リンクのインラインブロック表示 */
 }
 
 .action-button:hover {
