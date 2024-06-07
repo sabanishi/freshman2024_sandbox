@@ -5,14 +5,9 @@ import Header from "./Header";
 
 function MainPage() {
   const [searchTerm, setSearchTerm] = createSignal("");
-  const [menuOpen, setMenuOpen] = createSignal(false);
 
   const handleSearch = () => {
     alert(`Searching for: ${searchTerm()}`);
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen());
   };
 
   return (
