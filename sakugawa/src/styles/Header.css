@@ -15,6 +15,7 @@ header .logo {
 header .menu {
   font-size: 36px;
   cursor: pointer;
+  user-select: none;
 }
 
 nav {
