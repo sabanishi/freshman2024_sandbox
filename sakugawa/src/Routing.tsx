@@ -2,7 +2,7 @@ import { Router, Route } from "@solidjs/router";
 import Lending from "./pages/Lending";
 import Return from "./pages/Return";
 import MainPage from "./pages/MainPage";
-import FirebaseTest from "./FirebaseTest";
+import FirebaseTest from "./pages/FirebaseTest";
 
 function Routing() {
   return (
