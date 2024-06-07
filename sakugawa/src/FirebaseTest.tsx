@@ -37,7 +37,7 @@ class Data {
 }
 
 
-const App: Component = () => {
+const FirebaseTest: Component = () => {
     const [messages, setMessages] = createSignal<Data[]>([]);
 
     let id : string = "test";
@@ -97,4 +97,4 @@ const App: Component = () => {
     );
 };
 
-export default App;
+export default FirebaseTest;
