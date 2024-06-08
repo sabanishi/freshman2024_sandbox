@@ -1,0 +1,108 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  position: relative;
+}
+
+header .logo {
+  font-size: 24px;
+}
+
+header .menu {
+  font-size: 36px;
+  cursor: pointer;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  background-color: #444;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+nav.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px; /* 左側だけの角を丸める */
+  height: 40px; /* 固定の高さを設定 */
+  box-sizing: border-box; /* パディングを含む高さ */
+}
+
+.search-button {
+  padding: 0 20px; /* 左右のパディングを設定 */
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 0 4px 4px 0; /* 右側だけの角を丸める */
+  background-color: #eee;
+  height: 40px; /* 固定の高さを設定 */
+  box-sizing: border-box; /* パディングを含む高さ */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* ボタン間のスペースを設定 */
+  margin-top: 40px; /* 検索バーからのスペースを増やす */
+}
+
+.action-button {
+  padding: 20px 40px;
+  font-size: 24px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s;
+  text-decoration: none; /* 下線を消す */
+  color: inherit; /* 親要素の色を継承 */
+  display: inline-block; /* リンクのインラインブロック表示 */
+}
+
+.action-button:hover {
+  background-color: #ddd;
+}

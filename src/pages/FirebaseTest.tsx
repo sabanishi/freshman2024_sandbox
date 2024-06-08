@@ -1,6 +1,6 @@
 import {Component, createSignal, onMount} from 'solid-js';
 
-import {db} from './firebaseConfig';
+import {db} from '../firebaseConfig';
 import {collection, doc, getDocs, setDoc} from "firebase/firestore";
 
 class Data {
@@ -37,7 +37,7 @@ class Data {
 }
 
 
-const App: Component = () => {
+const FirebaseTest: Component = () => {
     const [messages, setMessages] = createSignal<Data[]>([]);
 
     let id : string = "test";
@@ -97,4 +97,4 @@ const App: Component = () => {
     );
 };
 
-export default App;
+export default FirebaseTest;
