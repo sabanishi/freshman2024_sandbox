@@ -18,6 +18,7 @@ function Header() {
         <A href="/lending">貸出</A>
         <A href="/return">返却</A>
         <A href="/login">ログイン</A>
+        <A href="/register">登録</A>
         <A href="/firebase-test">Firebase特設ページ</A>
       </nav>
     </header>
