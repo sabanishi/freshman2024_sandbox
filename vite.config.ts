@@ -2,8 +2,6 @@ import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 // import devtools from 'solid-devtools/vite';
 
-const isProd = process.env.NODE_ENV === 'production';
-
 export default defineConfig({
   plugins: [
     /* 
@@ -18,7 +16,6 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    outDir: 'docs',
   },
-  base: isProd ? '/freshman2024_sandbox/' : '/',
+  base: '/freshman2024_sandbox/',
 });
