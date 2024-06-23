@@ -17,7 +17,7 @@ const Register: Component = () => {
         <p>これは登録ページです.</p>
         <button onClick={openModal}>登録</button>
         <Modal isOpen={isModalOpen()} onClose={closeModal} title="登録モーダル">
-          <img src="https://picsum.photos/400/300" alt="placeholder" width={400} height={300} />
+          <img src="https://picsum.photos/400/300" alt="placeholder" class="responsive-image" width={400} height={300} />
           <button onClick={closeModal}>閉じる</button>
         </Modal>
       </div>
