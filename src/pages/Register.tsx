@@ -1,25 +1,31 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, onCleanup } from "solid-js";
 import Header from "./Header";
 import Modal from "./Modal";
+import { BrowserMultiFormatReader } from "@zxing/library";
 
 const Register: Component = () => {
   const [isModalOpen, setModalOpen] = createSignal(false);
-  const [isOptionModalOpen, setOptionModalOpen] = createSignal(false);
-  const [photo, setPhoto] = createSignal<string | null>(null);
   const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
+  const [photo, setPhoto] = createSignal<string | null>(null);
+  const [isbn, setIsbn] = createSignal<string | null>(null);
   let videoRef: HTMLVideoElement | undefined;
   let canvasRef: HTMLCanvasElement | undefined;
+  let reader: BrowserMultiFormatReader;
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-  const openOptionModal = () => setOptionModalOpen(true);
-  const closeOptionModal = () => setOptionModalOpen(false);
-  const openCameraModal = () => setCameraModalOpen(true);
+  const openCameraModal = async () => {
+    setCameraModalOpen(true);
+    await startCamera();
+  };
   const closeCameraModal = () => {
     setCameraModalOpen(false);
     if (videoRef && videoRef.srcObject) {
       (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
       videoRef.srcObject = null;
+    }
+    if (reader) {
+      reader.reset();
     }
   };
 
@@ -31,7 +37,6 @@ const Register: Component = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setPhoto(e.target?.result as string);
-        closeOptionModal();
         openModal();
       };
       reader.readAsDataURL(file);
@@ -45,30 +50,34 @@ const Register: Component = () => {
         videoRef.srcObject = stream;
         videoRef.play();
       }
+      reader = new BrowserMultiFormatReader();
+      reader.decodeFromVideoDevice(undefined, videoRef, (result, err) => {
+        if (result) {
+          setIsbn(result.getText());
+          closeCameraModal();
+          openModal();
+        }
+      });
     } catch (err) {
       alert("カメラのアクセスが許可されていません。");
     }
   };
 
-  const capturePhoto = () => {
-    if (canvasRef && videoRef) {
-      const context = canvasRef.getContext("2d");
-      if (context) {
-        context.drawImage(videoRef, 0, 0, canvasRef.width, canvasRef.height);
-        const dataUrl = canvasRef.toDataURL("image/png");
-        setPhoto(dataUrl);
-        closeCameraModal();
-        openModal();
-      }
+  onCleanup(() => {
+    if (reader) {
+      reader.reset();
     }
-  };
+    if (videoRef && videoRef.srcObject) {
+      (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+    }
+  });
 
   return (
     <>
       <Header />
       <div>
         <h1>登録ページ</h1>
-        <p>これは登録ページです.</p>
+        <p>これは登録ページです。</p>
         {/* 隠されたファイル入力をカメラの起動に使用 */}
         <input
           type="file"
@@ -77,31 +86,18 @@ const Register: Component = () => {
           id="fileInput"
           onChange={handleCapture}
         />
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment" // スマホの背面カメラを使用するように指定
-          style={{ display: "none" }}
-          id="cameraInput"
-          onChange={handleCapture}
-        />
-        {/* ボタンをクリックしてオプションモーダルをトリガー */}
-        <button onClick={openOptionModal}>登録</button>
-        <Modal isOpen={isOptionModalOpen()} onClose={closeOptionModal} title="オプション選択">
-          <div>
-            <button onClick={() => document.getElementById("fileInput")?.click()}>ファイルから選択</button>
-            <button onClick={async () => { openCameraModal(); await startCamera(); }}>カメラから取得</button>
-          </div>
-        </Modal>
+        {/* 登録ボタンをクリックしてカメラモーダルをトリガー */}
+        <button onClick={openCameraModal}>登録</button>
         <Modal isOpen={isCameraModalOpen()} onClose={closeCameraModal} title="カメラ">
           <div>
-            <video ref={el => videoRef = el} width="400" height="300"></video>
-            <button onClick={capturePhoto}>写真を撮る</button>
+            <video ref={el => videoRef = el} width="100%" height="100%" style={{ maxWidth: "400px", maxHeight: "300px" }} autoplay playsInline></video>
           </div>
         </Modal>
         <Modal isOpen={isModalOpen()} onClose={closeModal} title="登録モーダル">
-          {/* 取得した写真を表示 */}
-          {photo() ? (
+          {/* 取得したISBNを表示 */}
+          {isbn() ? (
+            <p>ISBN: {isbn()}</p>
+          ) : photo() ? (
             <img src={photo()!} alt="Captured" class="responsive-image" width={400} height={300} />
           ) : (
             <img src="https://picsum.photos/400/300" alt="placeholder" class="responsive-image" width={400} height={300} />
