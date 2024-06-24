@@ -40,7 +40,7 @@ const Register: Component = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
       if (videoRef) {
         videoRef.srcObject = stream;
         videoRef.play();
