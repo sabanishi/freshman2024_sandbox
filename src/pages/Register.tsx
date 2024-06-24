@@ -13,20 +13,18 @@ const Register: Component = () => {
   let reader: BrowserMultiFormatReader;
 
   const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    stopCamera();
+  };
+
   const openCameraModal = async () => {
     setCameraModalOpen(true);
     await startCamera();
   };
   const closeCameraModal = () => {
     setCameraModalOpen(false);
-    if (videoRef && videoRef.srcObject) {
-      (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-      videoRef.srcObject = null;
-    }
-    if (reader) {
-      reader.reset();
-    }
+    stopCamera();
   };
 
   const handleCapture = (event: Event) => {
@@ -45,7 +43,13 @@ const Register: Component = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
       if (videoRef) {
         videoRef.srcObject = stream;
         videoRef.play();
@@ -63,13 +67,18 @@ const Register: Component = () => {
     }
   };
 
-  onCleanup(() => {
+  const stopCamera = () => {
+    if (videoRef && videoRef.srcObject) {
+      (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+      videoRef.srcObject = null;
+    }
     if (reader) {
       reader.reset();
     }
-    if (videoRef && videoRef.srcObject) {
-      (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-    }
+  };
+
+  onCleanup(() => {
+    stopCamera();
   });
 
   return (
