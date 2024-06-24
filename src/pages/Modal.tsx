@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, createEffect } from "solid-js";
 import "../styles/Modal.css";
 
 interface ModalProps {
@@ -6,9 +6,16 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: any;
+  onOpened?: () => void; // 新しく追加するプロパティ
 }
 
 const Modal: Component<ModalProps> = (props) => {
+  createEffect(() => {
+    if (props.isOpen && props.onOpened) {
+      props.onOpened();
+    }
+  });
+
   return (
     <>
       {props.isOpen && (
