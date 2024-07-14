@@ -17,5 +17,5 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  base: '/freshman2024_sandbox/',
+  // base: 'freshman2024_sandbox',
 });

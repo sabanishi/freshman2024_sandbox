@@ -81,6 +81,20 @@ const Register: Component = () => {
     stopCamera();
   });
 
+  const isbn10 = () => {
+    const isbn13 = isbn();
+    if (!isbn13) return null;
+    if (isbn13.length !== 13) return null;
+    if (!isbn13.startsWith("978")) return null;
+    const isbn10 = isbn13.substring(3, 12);
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(isbn10[i]) * (10 - i);
+    }
+    const checkDigit = (11 - sum % 11) % 11;
+    return isbn10 + checkDigit;
+  }
+
   return (
     <>
       <Header />
@@ -105,7 +119,8 @@ const Register: Component = () => {
         <Modal isOpen={isModalOpen()} onClose={closeModal} title="登録モーダル">
           {/* 取得したISBNを表示 */}
           {isbn() ? (
-            <p>ISBN: {isbn()}</p>
+            // <p>ISBN: {isbn()}</p>
+            <img src={`https://images-na.ssl-images-amazon.com/images/P/${isbn10()}.01.MZZZZZZZ.jpg`} alt="Cover" class="responsive-image" width={400} height={300} />
           ) : photo() ? (
             <img src={photo()!} alt="Captured" class="responsive-image" width={400} height={300} />
           ) : (
