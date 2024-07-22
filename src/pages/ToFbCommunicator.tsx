@@ -4,7 +4,18 @@ import {db} from '../firebaseConfig';
 import {collection, doc, getDocs, setDoc} from "firebase/firestore";
 
 const registerBookData = async (bookData: BookData) => {
+    const path = bookData.id;
+    await setDoc(doc(db, "book",path), toDict(bookData));
+}
 
+const toDict = (data:BookData): { [key: string]: any } =>{
+    return {
+        id:data.id,
+        title:data.title,
+        authors:data.authors,
+        description:data.description,
+        path_to_image: data.path_to_image
+    };
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
