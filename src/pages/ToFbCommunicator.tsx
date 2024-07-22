@@ -1,31 +1,35 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
+import {db} from '../firebaseConfig';
+import {collection, doc, getDocs, setDoc} from "firebase/firestore";
 
 const registerBookData = async (bookData: BookData) => {
-    
+
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
-        
+
 }
 
 const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
-    return [[
-        {
-            id: '1',
-            title: 'ホゲホゲのホゲホゲ',
-            authors: ['ぽげ山ぽげ夫'],
-            description: 'ぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげぽげ',
-            path_to_image: 'https://picsum.photos/210/297',
-        },
-        {
-            id: '2',
-            title: 'フガフガのフガフガ',
-            authors: ['フガ沢フガ美'],
-            description: 'フガフガフガフガフガフガフガフガフガフガフガフガフガフガフガ',
-            path_to_image: 'https://picsum.photos/210/297',
-        },
-    ], [
+    const books: BookData[] = []
+    const rentals: RentalData[] = []
+
+    const querySnapshot = await getDocs(collection(db, "book"));
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        //BookDataに変換
+        const bookData: BookData = {
+            id: doc.id,
+            title: data.title,
+            authors: data.authors,
+            description: data.description,
+            path_to_image: data.path_to_image
+        }
+        books.push(bookData);
+    });
+
+    return [books, [
         {
             id: '1',
             book_id: '1',
@@ -38,7 +42,7 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
             borrower: 'フガ美',
             is_returned: true,
         },
-    ]];     
+    ]];
 }
 
-export { registerBookData, registerRentalData, fetchData };
+export {registerBookData, registerRentalData, fetchData};
