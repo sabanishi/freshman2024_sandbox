@@ -20,6 +20,7 @@ function Header() {
         <A href="/return">返却</A>
         <A href="/login">ログイン</A>
         <A href="/register">登録</A>
+        <A href="/bookshell">本棚</A>
         <A href="/firebase-test">Firebase特設ページ</A>
       </nav>
     </header>

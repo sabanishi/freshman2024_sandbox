@@ -5,3 +5,5 @@ interface BookData {
     description: string;
     path_to_image: string;
 }
+
+export default BookData;

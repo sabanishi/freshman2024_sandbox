@@ -4,3 +4,5 @@ interface RentalData {
     borrower: string;
     is_returned: boolean;
 }
+
+export default RentalData;

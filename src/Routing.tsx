@@ -4,6 +4,7 @@ import Return from "./pages/Return";
 import MainPage from "./pages/MainPage";
 import FirebaseTest from "./pages/FirebaseTest";
 import Register from "./pages/Register";
+import Bookshell from "./pages/Bookshell";
 
 function Routing() {
   return (
@@ -13,6 +14,7 @@ function Routing() {
       <Route path="/return" component={Return} />
       <Route path="/firebase-test" component={FirebaseTest} />
       <Route path="/register" component={Register} />
+      <Route path="/bookshell" component={Bookshell} />
     </Router>
   );
 }

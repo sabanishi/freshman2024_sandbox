@@ -1,0 +1,112 @@
+/* App.module.css */
+.app {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.searchBar {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.searchBar input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px 0 0 5px;
+}
+
+.cameraButton {
+  padding: 10px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.bookList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.bookList li {
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bookCover {
+  background: #e0e0e0;
+  width: 100px;
+  min-width: 100px; /* 幅を固定 */
+  height: 150px; /* 高さを固定 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* はみ出た画像を隠す */
+}
+
+.bookCover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 画像のアスペクト比を保持しつつ、領域を埋める */
+}
+
+.bookInfo {
+  padding: 10px;
+  flex-grow: 1;
+}
+
+.bookInfo h3 {
+  margin-top: 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  margin: 0 10px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 10px;
+  }
+
+  .bookList li {
+    flex-direction: column;
+  }
+
+  .bookCover {
+    width: 100%;
+    height: 100px;
+  }
+}
