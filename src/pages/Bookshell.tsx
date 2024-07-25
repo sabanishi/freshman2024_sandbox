@@ -22,6 +22,9 @@ function Bookshell() {
   const [name, setName] = createSignal("");
   const [selectedBookID, setSelectedBookID] = createSignal<string | null>(null);
 
+  const [isReturnModalOpen, setReturnModalOpen] = createSignal(false);
+  const [selectedReturnBookID, setSelectedReturnBookID] = createSignal<string | null>(null);
+
   createEffect(async () => {
     try {
       setLoading(true);
@@ -72,6 +75,25 @@ function Bookshell() {
     closeLendModal();
   };
 
+  const openReturnModal = async (id: string) => {
+    setReturnModalOpen(true);
+    setSelectedReturnBookID(id);
+  };
+  const closeReturnModal = () => {
+    setReturnModalOpen(false);
+    setSelectedReturnBookID(null);
+  };
+
+  const handleReturn = async () => {
+    if (!selectedReturnBookID()) return;
+    const rental = rentals().find(r => r.book_id === selectedReturnBookID());
+    if (!rental) return;
+    rental.is_returned = true;
+    await registerRentalData(rental);
+    setRentals([...rentals()]);
+    closeReturnModal();
+  };
+
   return (
     <>
       <Header />
@@ -104,7 +126,10 @@ function Bookshell() {
                     <summary>詳細</summary>
                     <p>{getBookDetails(book)}</p>
                   </details>
-                  <button onClick={() => openLendModal(book.id)} disabled={!isBookAvailable(book.id)}>貸出</button>
+                  {isBookAvailable(book.id) ? 
+                    <button onClick={() => openLendModal(book.id)}>貸出</button> :
+                    <button onClick={() => openReturnModal(book.id)}>返却</button>
+                  }
                 </div>
               </li>
             ))}
@@ -126,6 +151,12 @@ function Bookshell() {
             <button onClick={closeLendModal}>キャンセル</button>
           </div>
         </div>
+        </Modal>
+        <Modal isOpen={isReturnModalOpen()} onClose={closeReturnModal} title="この本を返却しますか？">
+          <div>
+            <button onClick={handleReturn}>返却</button>
+            <button onClick={closeReturnModal}>キャンセル</button>
+          </div>
         </Modal>
         <div class={styles.pagination}>
           <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage() === 1}>&lt;</button>
