@@ -5,10 +5,10 @@ import {collection, doc, getDocs, setDoc} from "firebase/firestore";
 
 const registerBookData = async (bookData: BookData) => {
     const path = bookData.id;
-    await setDoc(doc(db, "book",path), toDict(bookData));
+    await setDoc(doc(db, "book",path), toBookDict(bookData));
 }
 
-const toDict = (data:BookData): { [key: string]: any } =>{
+const toBookDict = (data:BookData): { [key: string]: any } =>{
     return {
         id:data.id,
         title:data.title,
@@ -19,16 +19,25 @@ const toDict = (data:BookData): { [key: string]: any } =>{
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
-    let stringedData = JSON.stringify(rentalData);
-    alert(stringedData);
+    const path = rentalData.id;
+    await setDoc(doc(db, "rental",path), toRentalDict(rentalData));
+}
+
+const toRentalDict = (data:RentalData): { [key: string]: any } =>{
+    return {
+        id:data.id,
+        book_id:data.book_id,
+        borrower:data.borrower,
+        is_returned:data.is_returned
+    };
 }
 
 const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
     const books: BookData[] = []
     const rentals: RentalData[] = []
 
-    const querySnapshot = await getDocs(collection(db, "book"));
-    querySnapshot.forEach((doc) => {
+    const bookSnapshot = await getDocs(collection(db, "book"));
+    bookSnapshot.forEach((doc) => {
         const data = doc.data();
         //BookDataに変換
         const bookData: BookData = {
@@ -41,20 +50,20 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         books.push(bookData);
     });
 
-    return [books, [
-        {
-            id: '1',
-            book_id: '1',
-            borrower: 'ぽげ夫',
-            is_returned: false,
-        },
-        {
-            id: '2',
-            book_id: '2',
-            borrower: 'フガ美',
-            is_returned: true,
-        },
-    ]];
+    const rentalSnapshot = await getDocs(collection(db, "rental"));
+    rentalSnapshot.forEach((doc) => {
+        const data = doc.data();
+        //RentalDataに変換
+        const rentalData: RentalData = {
+            id: doc.id,
+            book_id: data.book_id,
+            borrower: data.borrower,
+            is_returned: data.is_returned
+        }
+        rentals.push(rentalData);
+    });
+
+    return [books, rentals];
 }
 
 export {registerBookData, registerRentalData, fetchData};
