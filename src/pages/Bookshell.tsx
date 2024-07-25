@@ -68,6 +68,7 @@ function Bookshell() {
       is_returned: false,
     };
     await registerRentalData(rental);
+    setRentals([...rentals(), rental]);
     closeLendModal();
   };
 
