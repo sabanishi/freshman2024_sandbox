@@ -1,9 +1,11 @@
 import { Component, createSignal, createEffect } from "solid-js";
 import Header from "./Header";
 import styles from "./Bookshell.module.css";
-import { fetchData } from "./ToFbCommunicator";
+import { fetchData, registerRentalData } from "./ToFbCommunicator";
+import { v4 as uuidv4 } from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
+import Modal from "./Modal";
 
 function Bookshell() {
   const [books, setBooks] = createSignal<BookData[]>([]);
@@ -15,6 +17,10 @@ function Bookshell() {
   const [totalPages, setTotalPages] = createSignal(1);
 
   const [searchTerm, setSearchTerm] = createSignal("");
+
+  const [isLendModalOpen, setLendModalOpen] = createSignal(false);
+  const [name, setName] = createSignal("");
+  const [selectedBookID, setSelectedBookID] = createSignal<string | null>(null);
 
   createEffect(async () => {
     try {
@@ -41,6 +47,28 @@ function Bookshell() {
 
   const getBookDetails = (book: BookData) => {
     return `Authors: ${book.authors.join(", ")}\nDescription: ${book.description}`;
+  };
+
+  const openLendModal = async (id: string) => {
+    setLendModalOpen(true);
+    setSelectedBookID(id);
+  };
+  const closeLendModal = () => {
+    setLendModalOpen(false);
+    setSelectedBookID(null);
+  };
+
+  const handleLend = async () => {
+    if (!selectedBookID()) return;
+    const rentalID = uuidv4();
+    const rental: RentalData = {
+      id: rentalID,
+      book_id: selectedBookID()!,
+      borrower: name(),
+      is_returned: false,
+    };
+    await registerRentalData(rental);
+    closeLendModal();
   };
 
   return (
@@ -75,11 +103,29 @@ function Bookshell() {
                     <summary>詳細</summary>
                     <p>{getBookDetails(book)}</p>
                   </details>
+                  <button onClick={() => openLendModal(book.id)} disabled={!isBookAvailable(book.id)}>貸出</button>
                 </div>
               </li>
             ))}
           </ul>
         )}
+        <Modal isOpen={isLendModalOpen()} onClose={closeLendModal} title="この本を借りますか？">
+        <div>
+          <div>
+            貸出人
+            <input
+              type="text"
+              placeholder="東工 太郎"
+              value={name()}
+              onInput={(e) => setName(e.currentTarget.value)}
+            />
+          </div>
+          <div>
+            <button onClick={handleLend}>貸出</button>
+            <button onClick={closeLendModal}>キャンセル</button>
+          </div>
+        </div>
+        </Modal>
         <div class={styles.pagination}>
           <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage() === 1}>&lt;</button>
           <span>{currentPage()} / {totalPages()}</span>

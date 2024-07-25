@@ -19,7 +19,8 @@ const toDict = (data:BookData): { [key: string]: any } =>{
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
-
+    let stringedData = JSON.stringify(rentalData);
+    alert(stringedData);
 }
 
 const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
