@@ -6,32 +6,6 @@
   padding: 20px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.menuButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.searchBar {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.searchBar input {
-  flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px 0 0 5px;
-}
-
 .cameraButton {
   padding: 10px;
   background: #f0f0f0;
@@ -94,6 +68,47 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
+}
+
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+.search-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto 20px;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.search-bar {
+  display: flex;
+  width: 100%;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  min-width: 0;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.search-button {
+  padding: 0 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 0 4px 4px 0;
+  background-color: #eee;
+  height: 40px;
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {

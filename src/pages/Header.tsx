@@ -14,14 +14,8 @@ function Header() {
       <div class="logo">ろご</div>
       <div class="menu" onClick={toggleMenu}>☰</div>
       <nav class={menuOpen() ? "show" : ""}>
-        <A href="/">ホーム・検索</A>
-        <A href="/lending">本棚・貸出</A>
-        <A href="/lending">バーコード貸出</A>
-        <A href="/return">返却</A>
-        <A href="/login">ログイン</A>
+        <A href="/">ホーム・本棚</A>
         <A href="/register">登録</A>
-        <A href="/bookshell">本棚</A>
-        <A href="/firebase-test">Firebase特設ページ</A>
       </nav>
     </header>
   );
