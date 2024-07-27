@@ -1,0 +1,37 @@
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.slider {
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 12px;
+  margin-right: 10px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.slider.on {
+  background-color: #4CAF50;
+}
+
+.knob {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.slider.on .knob {
+  transform: translateX(26px);
+}

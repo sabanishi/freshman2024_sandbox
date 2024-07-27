@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
 import Modal from "./Modal";
+import ToggleButton from "./ToggleButton";
 
 function Bookshell() {
   const [books, setBooks] = createSignal<BookData[]>([]);
@@ -101,6 +102,7 @@ function Bookshell() {
       <Header />
       <main>
         <h2>本棚</h2>
+        <ToggleButton />
         <div class="search-container">
           <div class="search-bar">
             <input
