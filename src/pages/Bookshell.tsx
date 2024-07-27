@@ -1,7 +1,7 @@
 import {createSignal,　onMount} from "solid-js";
 import Header from "./Header";
 import styles from "./Bookshell.module.css";
-import {fetchBookData, fetchRentalData, registerRentalData} from "./ToFbCommunicator";
+import {fetchBookData, fetchRentalData, registerRentalData, updateRentalData} from "./ToFbCommunicator";
 import {v4 as uuidv4} from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
@@ -74,6 +74,8 @@ function Bookshell() {
             book_id: selectedBookID()!,
             borrower: name(),
             is_returned: false,
+            lend_time: new Date(),
+            return_time: new Date()
         };
         await registerRentalData(rental);
         setRentals([...rentals(), rental]);
@@ -90,11 +92,10 @@ function Bookshell() {
     };
 
     const handleReturn = async () => {
-        if (!selectedReturnBookID()) return;
         const rental = rentals().find(r => r.book_id === selectedReturnBookID());
         if (!rental) return;
         rental.is_returned = true;
-        await registerRentalData(rental);
+        await updateRentalData(rental, true)
         setRentals([...rentals()]);
         closeReturnModal();
     };

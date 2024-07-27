@@ -1,15 +1,7 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
 import { db } from '../firebaseConfig';
-import { ref, set, get, child } from "firebase/database";
-
-const registerBookData = async (bookData: BookData) => {
-    const rawData = toBookDict(bookData);
-    console.log(rawData);
-    // データベースに登録
-    await set(ref(db, `book/${bookData.id}`), rawData);
-    console.log("登録完了");
-}
+import { ref, set, get, child,query,orderByChild,equalTo } from "firebase/database";
 
 const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
@@ -21,17 +13,14 @@ const toBookDict = (data: BookData): { [key: string]: any } => {
     };
 }
 
-const registerRentalData = async (rentalData: RentalData) => {
-    const path = `rental/${rentalData.id}`;
-    await set(ref(db, path), toRentalDict(rentalData));
-}
-
 const toRentalDict = (data: RentalData): { [key: string]: any } => {
     return {
         id: data.id,
         book_id: data.book_id,
         borrower: data.borrower,
-        is_returned: data.is_returned
+        is_returned: data.is_returned,
+        lend_time: data.lend_time.toString(),
+        return_time: data.return_time.toString()
     };
 }
 
@@ -74,7 +63,9 @@ const fetchRentalData = async (): Promise<RentalData[]> => {
                 id: id,
                 book_id: data[id].book_id,
                 borrower: data[id].borrower,
-                is_returned: data[id].is_returned
+                is_returned: data[id].is_returned,
+                lend_time: new Date(data[id].lend_time),
+                return_time: new Date(data[id].return_time)
             };
             rentals.push(rentalData);
         }
@@ -83,4 +74,22 @@ const fetchRentalData = async (): Promise<RentalData[]> => {
     return rentals;
 }
 
-export { registerBookData, registerRentalData, fetchBookData, fetchRentalData };
+const registerBookData = async (bookData: BookData) => {
+    const rawData = toBookDict(bookData);
+    console.log(rawData);
+    // データベースに登録
+    await set(ref(db, `book/${bookData.id}`), rawData);
+    console.log("登録完了");
+}
+
+const registerRentalData = async (rentalData: RentalData) => {
+    const path = `rental/${rentalData.id}`;
+    console.log(toRentalDict(rentalData));
+    await set(ref(db, path), toRentalDict(rentalData));
+}
+
+const updateRentalData = async (data:RentalData,isReturned: boolean) => {
+    await set(ref(db, `rental/${data.id}`), toRentalDict(data));
+}
+
+export { registerBookData, registerRentalData,updateRentalData, fetchBookData, fetchRentalData };
