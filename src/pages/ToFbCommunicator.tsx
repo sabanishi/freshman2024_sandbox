@@ -35,15 +35,20 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
     };
 }
 
-const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
+const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
     const books: BookData[] = [];
-    const rentals: RentalData[] = [];
 
     const dbRef = ref(db);
     const bookSnapshot = await get(child(dbRef, 'book'));
     if (bookSnapshot.exists()) {
         const data = bookSnapshot.val();
         for (const id in data) {
+            // 検索条件に合致しない場合はスキップ
+            if(searchTerm != ""){
+                if(data[id].title.indexOf(searchTerm) == -1 && data[id].authors.indexOf(searchTerm) == -1
+                && data[id].description.indexOf(searchTerm)== -1) continue;
+            }
+
             const bookData: BookData = {
                 id: id,
                 title: data[id].title,
@@ -55,6 +60,12 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         }
     }
 
+    return books;
+}
+
+const fetchRentalData = async (): Promise<RentalData[]> => {
+    const rentals: RentalData[] = [];
+    const dbRef = ref(db);
     const rentalSnapshot = await get(child(dbRef, 'rental'));
     if (rentalSnapshot.exists()) {
         const data = rentalSnapshot.val();
@@ -69,7 +80,7 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         }
     }
 
-    return [books, rentals];
+    return rentals;
 }
 
-export { registerBookData, registerRentalData, fetchData };
+export { registerBookData, registerRentalData, fetchBookData, fetchRentalData };
