@@ -1,10 +1,9 @@
 import {Component, createSignal, onCleanup} from "solid-js";
 import styles from "./BookRegister.module.css";
 import Header from "./Header";
-import Modal from "./Modal";
-import {BrowserMultiFormatReader} from "@zxing/library";
 import BookData from "./BookData";
 import {registerBookData} from "./ToFbCommunicator";
+import Camera from "./Camera";
 
 const BookRegister: Component = () => {
     const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -15,60 +14,11 @@ const BookRegister: Component = () => {
     const [cover, setCover] = createSignal<File | null>(null);
     const [coverPreview, setCoverPreview] = createSignal<string | null>(null);
 
-    let videoRef: HTMLVideoElement | undefined;
-    let canvasRef: HTMLCanvasElement | undefined;
-    let reader: BrowserMultiFormatReader;
-
-    const openCameraModal = async () => {
+    const openCameraModal = () => {
         setCameraModalOpen(true);
-        await startCamera();
     };
     const closeCameraModal = () => {
         setCameraModalOpen(false);
-        stopCamera();
-    };
-
-    const stopCamera = () => {
-        if (videoRef && videoRef.srcObject) {
-            (videoRef.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-            videoRef.srcObject = null;
-        }
-        if (reader) {
-            reader.reset();
-        }
-    };
-
-    onCleanup(() => {
-        stopCamera();
-    });
-
-    const startCamera = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: "environment",
-                    width: {ideal: 1280},
-                    height: {ideal: 720}
-                }
-            });
-            if (videoRef) {
-                videoRef.srcObject = stream;
-                videoRef.play();
-            }
-            reader = new BrowserMultiFormatReader();
-            reader.decodeFromVideoDevice(undefined, videoRef, (result, err) => {
-                if (result) {
-                    const scannedIsbn = isbn10(result.getText());
-                    if(scannedIsbn!=null){
-                        setIsbn(scannedIsbn);
-                        fetchBookData(scannedIsbn);
-                        closeCameraModal();
-                    }
-                }
-            });
-        } catch (err) {
-            alert("カメラのアクセスが許可されていません。");
-        }
     };
 
     const handleCoverUpload = (event: Event) => {
@@ -194,14 +144,7 @@ const BookRegister: Component = () => {
                     <button type="submit" class={styles.submitButton} onClick={handleSubmit}>登録</button>
                 </div>
 
-                <Modal isOpen={isCameraModalOpen()} onClose={closeCameraModal} title="カメラ">
-                    <div>
-                        <video ref={el => videoRef = el} width="100%" height="100%"
-                               style={{maxWidth: "400px", maxHeight: "300px"}} autoplay playsInline></video>
-                    </div>
-                </Modal>
-                {/* Canvas を隠して写真を描画する */}
-                <canvas ref={el => canvasRef = el} style={{display: "none"}} width="400" height="300"></canvas>
+                <Camera isOpen={isCameraModalOpen()} onClose={closeCameraModal}></Camera>
             </div>
         </>
     );
