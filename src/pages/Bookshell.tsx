@@ -1,7 +1,7 @@
 import { Component, createSignal, createEffect, onMount } from "solid-js";
 import Header from "./Header";
 import styles from "./Bookshell.module.css";
-import { fetchData, registerRentalData } from "./ToFbCommunicator";
+import { fetchBookData, fetchRentalData,registerRentalData } from "./ToFbCommunicator";
 import { v4 as uuidv4 } from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
@@ -30,7 +30,8 @@ function Bookshell() {
   createEffect(async () => {
     try {
       setLoading(true);
-      const [fetchedBooks, fetchedRentals] = await fetchData();
+      const fetchedBooks = await fetchBookData();
+      const fetchedRentals = await fetchRentalData();
       setBooks(fetchedBooks);
       setRentals(fetchedRentals);
       setTotalPages(Math.ceil(fetchedBooks.length / booksPerPage)); // Assuming 10 books per page

@@ -35,9 +35,8 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
     };
 }
 
-const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
+const fetchBookData = async (): Promise<BookData[]> => {
     const books: BookData[] = [];
-    const rentals: RentalData[] = [];
 
     const dbRef = ref(db);
     const bookSnapshot = await get(child(dbRef, 'book'));
@@ -55,6 +54,12 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         }
     }
 
+    return books;
+}
+
+const fetchRentalData = async (): Promise<RentalData[]> => {
+    const rentals: RentalData[] = [];
+    const dbRef = ref(db);
     const rentalSnapshot = await get(child(dbRef, 'rental'));
     if (rentalSnapshot.exists()) {
         const data = rentalSnapshot.val();
@@ -69,7 +74,7 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         }
     }
 
-    return [books, rentals];
+    return rentals;
 }
 
-export { registerBookData, registerRentalData, fetchData };
+export { registerBookData, registerRentalData, fetchBookData, fetchRentalData };
