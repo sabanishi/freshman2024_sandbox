@@ -1,69 +1,75 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
-import {db} from '../firebaseConfig';
-import {collection, doc, getDocs, setDoc} from "firebase/firestore";
+import { db } from '../firebaseConfig';
+import { ref, set, get, child } from "firebase/database";
 
 const registerBookData = async (bookData: BookData) => {
-    const path = bookData.id;
-    await setDoc(doc(db, "book",path), toBookDict(bookData));
+    const rawData = toBookDict(bookData);
+    console.log(rawData);
+    // データベースに登録
+    await set(ref(db, `book/${bookData.id}`), rawData);
+    console.log("登録完了");
 }
 
-const toBookDict = (data:BookData): { [key: string]: any } =>{
+const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
-        id:data.id,
-        title:data.title,
-        authors:data.authors,
-        description:data.description,
+        id: data.id,
+        title: data.title,
+        authors: data.authors,
+        description: data.description,
         path_to_image: data.path_to_image
     };
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
-    const path = rentalData.id;
-    await setDoc(doc(db, "rental",path), toRentalDict(rentalData));
+    const path = `rental/${rentalData.id}`;
+    await set(ref(db, path), toRentalDict(rentalData));
 }
 
-const toRentalDict = (data:RentalData): { [key: string]: any } =>{
+const toRentalDict = (data: RentalData): { [key: string]: any } => {
     return {
-        id:data.id,
-        book_id:data.book_id,
-        borrower:data.borrower,
-        is_returned:data.is_returned
+        id: data.id,
+        book_id: data.book_id,
+        borrower: data.borrower,
+        is_returned: data.is_returned
     };
 }
 
 const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
-    const books: BookData[] = []
-    const rentals: RentalData[] = []
+    const books: BookData[] = [];
+    const rentals: RentalData[] = [];
 
-    const bookSnapshot = await getDocs(collection(db, "book"));
-    bookSnapshot.forEach((doc) => {
-        const data = doc.data();
-        //BookDataに変換
-        const bookData: BookData = {
-            id: doc.id,
-            title: data.title,
-            authors: data.authors,
-            description: data.description,
-            path_to_image: data.path_to_image
+    const dbRef = ref(db);
+    const bookSnapshot = await get(child(dbRef, 'book'));
+    if (bookSnapshot.exists()) {
+        const data = bookSnapshot.val();
+        for (const id in data) {
+            const bookData: BookData = {
+                id: id,
+                title: data[id].title,
+                authors: data[id].authors,
+                description: data[id].description,
+                path_to_image: data[id].path_to_image
+            };
+            books.push(bookData);
         }
-        books.push(bookData);
-    });
+    }
 
-    const rentalSnapshot = await getDocs(collection(db, "rental"));
-    rentalSnapshot.forEach((doc) => {
-        const data = doc.data();
-        //RentalDataに変換
-        const rentalData: RentalData = {
-            id: doc.id,
-            book_id: data.book_id,
-            borrower: data.borrower,
-            is_returned: data.is_returned
+    const rentalSnapshot = await get(child(dbRef, 'rental'));
+    if (rentalSnapshot.exists()) {
+        const data = rentalSnapshot.val();
+        for (const id in data) {
+            const rentalData: RentalData = {
+                id: id,
+                book_id: data[id].book_id,
+                borrower: data[id].borrower,
+                is_returned: data[id].is_returned
+            };
+            rentals.push(rentalData);
         }
-        rentals.push(rentalData);
-    });
+    }
 
     return [books, rentals];
 }
 
-export {registerBookData, registerRentalData, fetchData};
+export { registerBookData, registerRentalData, fetchData };
