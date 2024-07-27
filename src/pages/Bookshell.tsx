@@ -30,7 +30,7 @@ function Bookshell() {
   createEffect(async () => {
     try {
       setLoading(true);
-      const fetchedBooks = await fetchBookData();
+      const fetchedBooks = await fetchBookData(searchTerm());
       const fetchedRentals = await fetchRentalData();
       setBooks(fetchedBooks);
       setRentals(fetchedRentals);

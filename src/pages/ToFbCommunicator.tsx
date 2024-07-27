@@ -35,7 +35,7 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
     };
 }
 
-const fetchBookData = async (): Promise<BookData[]> => {
+const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
     const books: BookData[] = [];
 
     const dbRef = ref(db);
@@ -43,6 +43,12 @@ const fetchBookData = async (): Promise<BookData[]> => {
     if (bookSnapshot.exists()) {
         const data = bookSnapshot.val();
         for (const id in data) {
+            // 検索条件に合致しない場合はスキップ
+            if(searchTerm != ""){
+                if(data[id].title.indexOf(searchTerm) == -1 && data[id].authors.indexOf(searchTerm) == -1
+                && data[id].description.indexOf(searchTerm)== -1) continue;
+            }
+
             const bookData: BookData = {
                 id: id,
                 title: data[id].title,
