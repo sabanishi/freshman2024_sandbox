@@ -1,4 +1,4 @@
-import { Component, createSignal, createEffect } from "solid-js";
+import { Component, createSignal, createEffect, onMount } from "solid-js";
 import Header from "./Header";
 import styles from "./Bookshell.module.css";
 import { fetchData, registerRentalData } from "./ToFbCommunicator";
@@ -25,13 +25,15 @@ function Bookshell() {
   const [isReturnModalOpen, setReturnModalOpen] = createSignal(false);
   const [selectedReturnBookID, setSelectedReturnBookID] = createSignal<string | null>(null);
 
+  const booksPerPage = 10;
+
   createEffect(async () => {
     try {
       setLoading(true);
       const [fetchedBooks, fetchedRentals] = await fetchData();
       setBooks(fetchedBooks);
       setRentals(fetchedRentals);
-      setTotalPages(Math.ceil(fetchedBooks.length / 10)); // Assuming 10 books per page
+      setTotalPages(Math.ceil(fetchedBooks.length / booksPerPage)); // Assuming 10 books per page
     } catch (err) {
       setError("Failed to fetch data");
     } finally {
@@ -114,7 +116,7 @@ function Bookshell() {
         {error() && <p>Error: {error()}</p>}
         {!loading() && !error() && (
           <ul class={styles.bookList}>
-            {books().slice((currentPage() - 1) * 10, currentPage() * 10).map(book => (
+            {books().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
               <li key={book.id}>
                 <div class={styles.bookCover}>
                   <img src={book.path_to_image} alt={book.title} />
