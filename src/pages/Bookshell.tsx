@@ -94,9 +94,8 @@ function Bookshell() {
     const handleReturn = async () => {
         const rental = rentals().find(r => r.book_id === selectedReturnBookID());
         if (!rental) return;
-        rental.is_returned = true;
         await updateRentalData(rental, true)
-        setRentals([...rentals()]);
+        setRentals([...rentals().filter(r => r.id !== rental.id)]);
         closeReturnModal();
     };
 

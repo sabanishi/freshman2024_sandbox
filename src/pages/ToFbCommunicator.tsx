@@ -55,7 +55,8 @@ const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
 const fetchRentalData = async (): Promise<RentalData[]> => {
     const rentals: RentalData[] = [];
     const dbRef = ref(db);
-    const rentalSnapshot = await get(child(dbRef, 'rental'));
+    const rentalQuery = query(child(dbRef, 'rental'),orderByChild('is_returned'),equalTo(false));
+    const rentalSnapshot = await get(rentalQuery);
     if (rentalSnapshot.exists()) {
         const data = rentalSnapshot.val();
         for (const id in data) {
@@ -84,11 +85,11 @@ const registerBookData = async (bookData: BookData) => {
 
 const registerRentalData = async (rentalData: RentalData) => {
     const path = `rental/${rentalData.id}`;
-    console.log(toRentalDict(rentalData));
     await set(ref(db, path), toRentalDict(rentalData));
 }
 
 const updateRentalData = async (data:RentalData,isReturned: boolean) => {
+    data.is_returned = isReturned;
     await set(ref(db, `rental/${data.id}`), toRentalDict(data));
 }
 
