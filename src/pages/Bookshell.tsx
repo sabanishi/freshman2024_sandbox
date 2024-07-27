@@ -117,7 +117,7 @@ function Bookshell() {
         {!loading() && !error() && (
           <ul class={styles.bookList}>
             {books().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
-              <li key={book.id}>
+              <li>
                 <div class={styles.bookCover}>
                   <img src={book.path_to_image} alt={book.title} />
                 </div>
