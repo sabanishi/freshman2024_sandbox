@@ -14,6 +14,7 @@ const BookRegister: Component = () => {
     const [summary, setSummary] = createSignal("");
     const [cover, setCover] = createSignal<File | null>(null);
     const [coverPreview, setCoverPreview] = createSignal<string | null>(null);
+    let fileInputRef: HTMLInputElement | undefined;
 
     const openCameraModal = () => {
         setCameraModalOpen(true);
@@ -107,6 +108,8 @@ const BookRegister: Component = () => {
             }
             setSummary(description);
             setCoverPreview(imageSrc);
+            //ファイル選択をリセットする
+            fileInputRef!.value = "";
 
             if (alertMessage != "") {
                 alert(alertMessage);
@@ -168,7 +171,7 @@ const BookRegister: Component = () => {
                     </div>
                     <div class={styles.field}>
                         <label for="cover">表紙</label>
-                        <input type="file" id="cover" accept="image/*" onChange={handleCoverUpload}/>
+                        <input type="file" id="cover" accept="image/*" onChange={handleCoverUpload} ref={fileInputRef}/>
                     </div>
                     {coverPreview() && (
                         <img src={coverPreview()!} alt="Cover Preview" class={styles.coverPreview}/>
