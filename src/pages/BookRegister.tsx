@@ -37,14 +37,14 @@ const BookRegister: Component = () => {
     const handleSubmit = (event: Event) => {
         event.preventDefault();
         // 送信処理を追加する
-        console.log({ isbn: isbn(), title: title(), author: author(), summary: summary(), cover: cover() });
+        console.log({isbn: isbn(), title: title(), author: author(), summary: summary(), cover: cover()});
         //項目が1つでも欠けていたら登録しない
-        if(isbn()=="" || title()=="" || author()=="" || summary()=="" || coverPreview()==null){
+        if (isbn() == "" || title() == "" || author() == "" || summary() == "" || coverPreview() == null) {
             alert("未入力の項目があります");
             return;
         }
 
-        const book : BookData = {
+        const book: BookData = {
             id: isbn(),
             title: title(),
             authors: author().split(","),
@@ -53,7 +53,7 @@ const BookRegister: Component = () => {
         }
 
         //Firebaseに登録
-        registerBookData(book).then(()=>{
+        registerBookData(book).then(() => {
             alert("登録しました");
         });
     };
@@ -62,15 +62,12 @@ const BookRegister: Component = () => {
         try {
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
             if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
-
-            console.log("Fetched book data");
             const data = await response.json();
-            console.log(data.items)
 
-            const title :string= data.items[0]["volumeInfo"]["title"]
-            const authors:string[] = data.items[0]["volumeInfo"]["authors"];
-            const description:string = "ほげほげ";
-            const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/"+isbn+".09.LZZZZZZZ.jpg";
+            const title: string = data.items[0]["volumeInfo"]["title"]
+            const authors: string[] = data.items[0]["volumeInfo"]["authors"];
+            const description: string = "ほげほげ";
+            const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/" + isbn + ".09.LZZZZZZZ.jpg";
             setTitle(title);
             setAuthor(authors.join(", "));
             setSummary(description);
@@ -80,10 +77,10 @@ const BookRegister: Component = () => {
         }
     };
 
-    const detectIsbn = (isbn13 : string) =>{
+    const detectIsbn = (isbn13: string) => {
         //ISBN-10に変換
         const isbn10 = toIsbn10(isbn13);
-        if(isbn10 == null) return;
+        if (isbn10 == null) return;
         setIsbn(isbn10);
         fetchBookData(isbn10);
         closeCameraModal();
@@ -97,13 +94,15 @@ const BookRegister: Component = () => {
                 <div class={styles.form}>
                     <div class={styles.field}>
                         <label for="isbn">ISBN</label>
-                        <input
-                            type="text"
-                            id="isbn"
-                            value={isbn()}
-                            onInput={(e) => setIsbn(e.currentTarget.value)}
-                        />
-                        <button class={styles.cameraButton}　onClick={openCameraModal}>📷</button>
+                        <div class={styles.inputGroup}>
+                            <input
+                                type="text"
+                                id="isbn"
+                                value={isbn()}
+                                onInput={(e) => setIsbn(e.currentTarget.value)}
+                            />
+                            <button class={styles.cameraButton} onClick={openCameraModal}>📷</button>
+                        </div>
                     </div>
                     <div class={styles.field}>
                         <label for="title">タイトル</label>
@@ -133,7 +132,7 @@ const BookRegister: Component = () => {
                     </div>
                     <div class={styles.field}>
                         <label for="cover">表紙</label>
-                        <input type="file" id="cover" accept="image/*" onChange={handleCoverUpload} />
+                        <input type="file" id="cover" accept="image/*" onChange={handleCoverUpload}/>
                     </div>
                     {coverPreview() && (
                         <img src={coverPreview()!} alt="Cover Preview" class={styles.coverPreview}/>
@@ -148,3 +147,4 @@ const BookRegister: Component = () => {
 };
 
 export default BookRegister;
+
