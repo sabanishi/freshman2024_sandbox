@@ -1,10 +1,13 @@
 import {Component, createEffect, onCleanup} from "solid-js";
+
 import Modal from "./Modal";
 import {BrowserMultiFormatReader} from "@zxing/library";
+import {toIsbn10} from "../utils/IsbnUtils";
 
 interface CameraProps {
     isOpen: boolean;
     onClose: () => void;
+    onDetectIsbn: (isbn13:string) => void;
 }
 
 const Camera: Component<CameraProps> = (props: CameraProps) => {
@@ -50,12 +53,11 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
             reader = new BrowserMultiFormatReader();
             reader.decodeFromVideoDevice(undefined, videoRef, (result, err) => {
                 if (result) {
-                    /*const scannedIsbn = isbn10(result.getText());
-                    if(scannedIsbn!=null){
-                        setIsbn(scannedIsbn);
-                        fetchBookData(scannedIsbn);
-                        closeCameraModal();
-                    }*/
+                    //ISBNコードを取得
+                    const isbn13 = result.getText();
+                    if(isbn13!=null){
+                        props.onDetectIsbn(isbn13);
+                    }
                 }
             });
         } catch (err) {

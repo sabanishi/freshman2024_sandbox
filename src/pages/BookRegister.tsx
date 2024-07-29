@@ -4,6 +4,7 @@ import Header from "./Header";
 import BookData from "./BookData";
 import {registerBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
+import {toIsbn10} from "../utils/IsbnUtils";
 
 const BookRegister: Component = () => {
     const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -57,19 +58,6 @@ const BookRegister: Component = () => {
         });
     };
 
-    const isbn10 = (isbn13:string) => {
-        if (!isbn13) return null;
-        if (isbn13.length !== 13) return null;
-        if (!isbn13.startsWith("978")) return null;
-        const isbn10 = isbn13.substring(3, 12);
-        let sum = 0;
-        for (let i = 0; i < 9; i++) {
-            sum += parseInt(isbn10[i]) * (10 - i);
-        }
-        const checkDigit = (11 - sum % 11) % 11;
-        return isbn10 + checkDigit;
-    }
-
     const fetchBookData = async (isbn: string) => {
         try {
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
@@ -91,6 +79,15 @@ const BookRegister: Component = () => {
             console.error("Failed to fetch book data:", error);
         }
     };
+
+    const detectIsbn = (isbn13 : string) =>{
+        //ISBN-10に変換
+        const isbn10 = toIsbn10(isbn13);
+        if(isbn10 == null) return;
+        setIsbn(isbn10);
+        fetchBookData(isbn10);
+        closeCameraModal();
+    }
 
     return (
         <>
@@ -144,7 +141,7 @@ const BookRegister: Component = () => {
                     <button type="submit" class={styles.submitButton} onClick={handleSubmit}>登録</button>
                 </div>
 
-                <Camera isOpen={isCameraModalOpen()} onClose={closeCameraModal}></Camera>
+                <Camera isOpen={isCameraModalOpen()} onClose={closeCameraModal} onDetectIsbn={detectIsbn}></Camera>
             </div>
         </>
     );
