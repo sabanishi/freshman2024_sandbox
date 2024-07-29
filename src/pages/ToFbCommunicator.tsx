@@ -1,7 +1,7 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
-import { db } from '../firebaseConfig';
-import { ref, set, get, child,query,orderByChild,equalTo } from "firebase/database";
+import { my_ref } from '../FirebaseConfig';
+import { set, get, child,query,orderByChild,equalTo } from "firebase/database";
 
 const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
@@ -27,8 +27,7 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
 const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
     const books: BookData[] = [];
 
-    const dbRef = ref(db);
-    const bookSnapshot = await get(child(dbRef, 'book'));
+    const bookSnapshot = await get(child(my_ref(""), 'book'));
     if (bookSnapshot.exists()) {
         const data = bookSnapshot.val();
         for (const id in data) {
@@ -54,8 +53,7 @@ const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
 
 const fetchRentalData = async (): Promise<RentalData[]> => {
     const rentals: RentalData[] = [];
-    const dbRef = ref(db);
-    const rentalQuery = query(child(dbRef, 'rental'),orderByChild('is_returned'),equalTo(false));
+    const rentalQuery = query(child(my_ref(""), 'rental'),orderByChild('is_returned'),equalTo(false));
     const rentalSnapshot = await get(rentalQuery);
     if (rentalSnapshot.exists()) {
         const data = rentalSnapshot.val();
@@ -79,18 +77,18 @@ const registerBookData = async (bookData: BookData) => {
     const rawData = toBookDict(bookData);
     console.log(rawData);
     // データベースに登録
-    await set(ref(db, `book/${bookData.id}`), rawData);
+    await set(my_ref(`book/${bookData.id}`), rawData);
     console.log("登録完了");
 }
 
 const registerRentalData = async (rentalData: RentalData) => {
     const path = `rental/${rentalData.id}`;
-    await set(ref(db, path), toRentalDict(rentalData));
+    await set(my_ref(path), toRentalDict(rentalData));
 }
 
 const updateRentalData = async (data:RentalData,isReturned: boolean) => {
     data.is_returned = isReturned;
-    await set(ref(db, `rental/${data.id}`), toRentalDict(data));
+    await set(my_ref(`rental/${data.id}`), toRentalDict(data));
 }
 
 export { registerBookData, registerRentalData,updateRentalData, fetchBookData, fetchRentalData };

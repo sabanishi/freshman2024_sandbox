@@ -1,6 +1,6 @@
 import {Component, createSignal, onMount} from 'solid-js';
 
-import {db} from '../firebaseConfig';
+import {db} from '../FirebaseConfig';
 import {collection, doc, getDocs, setDoc} from "firebase/firestore";
 
 class Data {
