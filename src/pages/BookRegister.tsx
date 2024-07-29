@@ -58,20 +58,59 @@ const BookRegister: Component = () => {
         });
     };
 
-    const fetchBookData = async (isbn: string) => {
+    const fetchBookData = async (isbn13: string) => {
         try {
-            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+            const isbn10 = toIsbn10(isbn13);
+            if (!isbn10) {
+                alert("ISBNが不正です");
+                return;
+            }
+            setIsbn(isbn10);
+
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn13}`);
             if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
             const data = await response.json();
+            console.log(data);
+            if (data.items.length==0 || data.items[0] == null || data.items[0]["volumeInfo"] == null) {
+                alert("書籍情報が見つかりませんでした");
+                return;
+            }
 
-            const title: string = data.items[0]["volumeInfo"]["title"]
-            const authors: string[] = data.items[0]["volumeInfo"]["authors"];
+            const bookInfo = data.items[0]["volumeInfo"];
+
+            const title: string = bookInfo["title"]
+            const authors: string[] = bookInfo["authors"];
             const description: string = "ほげほげ";
-            const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/" + isbn + ".09.LZZZZZZZ.jpg";
+            const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/" + isbn10 + ".09.LZZZZZZZ.jpg";
+
+            //alert文を作成
+            let alertMessage = "";
+            if (title == null) {
+                alertMessage += "タイトルの情報がありません\n";
+            }
+
+            if (authors == null) {
+                alertMessage += "著者の情報がありません\n";
+            }
+
+            if (description == null) {
+                alertMessage += "概要の情報がありません\n";
+            }
+
+            if (imageSrc == null) {
+                alertMessage += "表紙の情報がありません\n";
+            }
+
             setTitle(title);
-            setAuthor(authors.join(", "));
+            if (authors != null) {
+                setAuthor(authors.join(", "));
+            }
             setSummary(description);
             setCoverPreview(imageSrc);
+
+            if (alertMessage != "") {
+                alert(alertMessage);
+            }
         } catch (error) {
             console.error("Failed to fetch book data:", error);
         }
@@ -79,10 +118,7 @@ const BookRegister: Component = () => {
 
     const detectIsbn = (isbn13: string) => {
         //ISBN-10に変換
-        const isbn10 = toIsbn10(isbn13);
-        if (isbn10 == null) return;
-        setIsbn(isbn10);
-        fetchBookData(isbn10);
+        fetchBookData(isbn13);
         closeCameraModal();
     }
 
