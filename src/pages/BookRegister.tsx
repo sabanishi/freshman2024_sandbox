@@ -128,12 +128,8 @@ const BookRegister: Component = () => {
 
     const detectIsbn = (isbn13: string) => {
         //ISBN-10に変換
-        fetchBookData(isbn13).then(result =>{
-            if(result){
-                //本の情報を取得できたらモーダルを閉じる
-                closeCameraModal();
-            }
-        });
+        fetchBookData(isbn13);
+        closeCameraModal();
     }
 
     return (
