@@ -10,6 +10,7 @@ import ToggleButton from "./ToggleButton";
 
 function Bookshell() {
   const [books, setBooks] = createSignal<BookData[]>([]);
+  const [shownBooks, setShownBooks] = createSignal<BookData[]>([]);
   const [rentals, setRentals] = createSignal<RentalData[]>([]);
   const [loading, setLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
@@ -25,6 +26,8 @@ function Bookshell() {
 
   const [isReturnModalOpen, setReturnModalOpen] = createSignal(false);
   const [selectedReturnBookID, setSelectedReturnBookID] = createSignal<string | null>(null);
+
+  const [isFiltered, setIsFiltered] = createSignal(false);
 
   const booksPerPage = 10;
 
@@ -97,12 +100,22 @@ function Bookshell() {
     closeReturnModal();
   };
 
+  const filterBooks = (books: BookData[]) => {
+    if (!isFiltered()) return books;
+    return books.filter(b => !isBookAvailable(b.id));
+  }
+
+
+
   return (
     <>
       <Header />
       <main>
         <h2>本棚</h2>
-        <ToggleButton />
+        <div>
+          貸出中のみを表示
+          <ToggleButton initialState={isFiltered()} onChange={setIsFiltered} />
+        </div>
         <div class="search-container">
           <div class="search-bar">
             <input
@@ -118,7 +131,7 @@ function Bookshell() {
         {error() && <p>Error: {error()}</p>}
         {!loading() && !error() && (
           <ul class={styles.bookList}>
-            {books().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
+            {filterBooks(books()).slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
               <li>
                 <div class={styles.bookCover}>
                   <img src={book.path_to_image} alt={book.title} />
