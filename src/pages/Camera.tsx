@@ -134,6 +134,7 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
                         style={{
                             width: "100%",
                             height: "auto",
+                            "aspect-ratio": "2 / 1",
                             transform:  isReverseCamera() ? "scaleX(-1)" : "none"
                         }}
                         autoPlay
