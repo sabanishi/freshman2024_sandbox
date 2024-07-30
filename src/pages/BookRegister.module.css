@@ -1,4 +1,3 @@
-/* BookRegistration.module.css */
 .container {
     font-family: Arial, sans-serif;
     max-width: 900px;
@@ -19,13 +18,18 @@ h2 {
 .field {
     margin-bottom: 15px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
 
 label {
     margin-bottom: 5px;
     font-weight: bold;
-    flex: 0 0 100px;
+}
+
+.inputGroup {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
 input[type="text"],
@@ -36,6 +40,7 @@ input[type="file"] {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
+    min-width: 0; /* Allow input to shrink */
 }
 
 textarea {
@@ -49,6 +54,7 @@ textarea {
     border-radius: 5px;
     cursor: pointer;
     padding: 10px;
+    flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .coverPreview {
@@ -75,26 +81,15 @@ textarea {
 }
 
 @media (max-width: 600px) {
-    .form {
-        flex-direction: column;
+    .inputGroup {
+        width: 100%;
     }
 
-    .field {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    label {
-        flex: 0 0 auto;
+    input[type="text"] {
+        flex: 1;
     }
 
     .cameraButton {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-
-    .coverPreview {
-        align-self: center;
+        margin-left: 10px;
     }
 }
-

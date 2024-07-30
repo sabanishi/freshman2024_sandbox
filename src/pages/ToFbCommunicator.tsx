@@ -1,15 +1,7 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
-import { db } from '../firebaseConfig';
-import { ref, set, get, child } from "firebase/database";
-
-const registerBookData = async (bookData: BookData) => {
-    const rawData = toBookDict(bookData);
-    console.log(rawData);
-    // データベースに登録
-    await set(ref(db, `book/${bookData.id}`), rawData);
-    console.log("登録完了");
-}
+import { my_ref } from '../FirebaseConfig';
+import { set, get, child,query,orderByChild,equalTo } from "firebase/database";
 
 const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
@@ -21,29 +13,30 @@ const toBookDict = (data: BookData): { [key: string]: any } => {
     };
 }
 
-const registerRentalData = async (rentalData: RentalData) => {
-    const path = `rental/${rentalData.id}`;
-    await set(ref(db, path), toRentalDict(rentalData));
-}
-
 const toRentalDict = (data: RentalData): { [key: string]: any } => {
     return {
         id: data.id,
         book_id: data.book_id,
         borrower: data.borrower,
-        is_returned: data.is_returned
+        is_returned: data.is_returned,
+        lend_time: data.lend_time.toString(),
+        return_time: data.return_time.toString()
     };
 }
 
-const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
+const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
     const books: BookData[] = [];
-    const rentals: RentalData[] = [];
 
-    const dbRef = ref(db);
-    const bookSnapshot = await get(child(dbRef, 'book'));
+    const bookSnapshot = await get(child(my_ref(""), 'book'));
     if (bookSnapshot.exists()) {
         const data = bookSnapshot.val();
         for (const id in data) {
+            // 検索条件に合致しない場合はスキップ
+            if(searchTerm != ""){
+                if(data[id].title.indexOf(searchTerm) == -1 && data[id].authors.indexOf(searchTerm) == -1
+                && data[id].description.indexOf(searchTerm)== -1) continue;
+            }
+
             const bookData: BookData = {
                 id: id,
                 title: data[id].title,
@@ -55,7 +48,13 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
         }
     }
 
-    const rentalSnapshot = await get(child(dbRef, 'rental'));
+    return books;
+}
+
+const fetchRentalData = async (): Promise<RentalData[]> => {
+    const rentals: RentalData[] = [];
+    const rentalQuery = query(child(my_ref(""), 'rental'),orderByChild('is_returned'),equalTo(false));
+    const rentalSnapshot = await get(rentalQuery);
     if (rentalSnapshot.exists()) {
         const data = rentalSnapshot.val();
         for (const id in data) {
@@ -63,13 +62,33 @@ const fetchData = async (): Promise<[BookData[], RentalData[]]> => {
                 id: id,
                 book_id: data[id].book_id,
                 borrower: data[id].borrower,
-                is_returned: data[id].is_returned
+                is_returned: data[id].is_returned,
+                lend_time: new Date(data[id].lend_time),
+                return_time: new Date(data[id].return_time)
             };
             rentals.push(rentalData);
         }
     }
 
-    return [books, rentals];
+    return rentals;
 }
 
-export { registerBookData, registerRentalData, fetchData };
+const registerBookData = async (bookData: BookData) => {
+    const rawData = toBookDict(bookData);
+    console.log(rawData);
+    // データベースに登録
+    await set(my_ref(`book/${bookData.id}`), rawData);
+    console.log("登録完了");
+}
+
+const registerRentalData = async (rentalData: RentalData) => {
+    const path = `rental/${rentalData.id}`;
+    await set(my_ref(path), toRentalDict(rentalData));
+}
+
+const updateRentalData = async (data:RentalData,isReturned: boolean) => {
+    data.is_returned = isReturned;
+    await set(my_ref(`rental/${data.id}`), toRentalDict(data));
+}
+
+export { registerBookData, registerRentalData,updateRentalData, fetchBookData, fetchRentalData };
