@@ -10,6 +10,7 @@ import ToggleButton from "./ToggleButton";
 
 function Bookshell() {
     const [books, setBooks] = createSignal<BookData[]>([]);
+    const [shownBooks, setShownBooks] = createSignal<BookData[]>([]);
     const [rentals, setRentals] = createSignal<RentalData[]>([]);
     const [loading, setLoading] = createSignal(true);
     const [error, setError] = createSignal<string | null>(null);
@@ -39,7 +40,9 @@ function Bookshell() {
             const fetchedRentals = await fetchRentalData();
             setBooks(fetchedBooks);
             setRentals(fetchedRentals);
-            setTotalPages(Math.ceil(fetchedBooks.length / booksPerPage)); // Assuming 10 books per page
+            const shownBooks = isFiltered() ? fetchedBooks.filter(b => !isBookAvailable(b.id)) : fetchedBooks;
+            setTotalPages(Math.ceil(shownBooks.length / booksPerPage));
+            setShownBooks(shownBooks);
         } catch (err) {
             setError("Failed to fetch data");
         } finally {
@@ -114,7 +117,10 @@ function Bookshell() {
                 <h2>本棚</h2>
                 <div>
                     貸出中のみを表示
-                    <ToggleButton initialState={isFiltered()} onChange={setIsFiltered} />
+                    <ToggleButton initialState={isFiltered()} onChange={(isOn) => {
+                      setIsFiltered(isOn);
+                      resetRendering();
+                    }} />
                 </div>
                 <div class="search-container">
                     <div class="search-bar">
@@ -131,7 +137,7 @@ function Bookshell() {
                 {error() && <p>Error: {error()}</p>}
                 {!loading() && !error() && (
                     <ul class={styles.bookList}>
-                        {books().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
+                        {filterBooks(books()).slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
                             <li key={book.id}>
                                 <div class={styles.bookCover}>
                                     <img src={book.path_to_image} alt={book.title}/>
