@@ -16,6 +16,7 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
     let reader: BrowserMultiFormatReader;
     const [isCameraReady, setIsCameraReady] = createSignal(false);
     const [redBoxRef, setRedBoxRef] = createSignal<HTMLDivElement>();
+    const [isReverseCamera, setIsReverseCamera] = createSignal<boolean>();
 
     createEffect(() => {
         if (props.isOpen) {
@@ -58,6 +59,14 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
                     scanFrame();
                 }
             }
+
+            const videoTracks = stream.getVideoTracks();
+            const track = videoTracks[0];
+            const settings = track.getSettings();
+
+            const isFront = settings.facingMode=="environment";
+            setIsReverseCamera(!isFront);
+
         } catch (err) {
             alert("カメラのアクセスが許可されていません。");
         }
@@ -125,7 +134,7 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
                         style={{
                             width: "100%",
                             height: "auto",
-                            transform: "scaleX(-1)"
+                            transform:  isReverseCamera() ? "scaleX(-1)" : "none"
                         }}
                         autoPlay
                         playsInline
