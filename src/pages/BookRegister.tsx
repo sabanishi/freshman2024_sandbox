@@ -88,18 +88,14 @@ const BookRegister: Component = () => {
         });
     };
 
+
     /**
      * Google Books APIを使って書籍情報を取得する
      * @param isbn13
      * @returns {Promise<boolean>} 取得に成功したかどうか
      */
-    const fetchBookData = async (isbn13: string):Promise<boolean> => {
+    const fetchBookData = async (isbn10: string,isbn13:string):Promise<boolean> => {
         try {
-            const isbn10 = toIsbn10(isbn13);
-            if (!isbn10) {
-                alert("ISBNが不正です");
-                return false;
-            }
             setIsbn(isbn13);
 
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn13}`);
@@ -157,7 +153,11 @@ const BookRegister: Component = () => {
 
     const detectIsbn = (isbn13: string) => {
         //ISBN-10に変換
-        fetchBookData(isbn13);
+        const isbn10 = toIsbn10(isbn13);
+        if (!isbn10) {
+            return;
+        }
+        fetchBookData(isbn10,isbn13);
         closeCameraModal();
     }
 

@@ -148,8 +148,8 @@ const Camera: Component<CameraProps> = (props: CameraProps) => {
                                 border: "2px solid red",
                                 top: "50%",
                                 left: "50%",
-                                width: "40%",
-                                "padding-top": "20%",
+                                width: "80%",
+                                "aspect-ratio": "2 / 1",
                                 transform: "translate(-50%, -50%)",
                                 pointerEvents: "none",
                                 boxSizing: "border-box"
