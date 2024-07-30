@@ -23,6 +23,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
       - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm run build
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
