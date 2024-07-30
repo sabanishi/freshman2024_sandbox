@@ -40,15 +40,19 @@ function Bookshell() {
             const fetchedRentals = await fetchRentalData();
             setBooks(fetchedBooks);
             setRentals(fetchedRentals);
-            const shownBooks = isFiltered() ? fetchedBooks.filter(b => !isBookAvailable(b.id)) : fetchedBooks;
-            setTotalPages(Math.ceil(shownBooks.length / booksPerPage));
-            setShownBooks(shownBooks);
+            updateShownBooks();
         } catch (err) {
             setError("Failed to fetch data");
         } finally {
             setLoading(false);
         }
     });
+
+    const updateShownBooks = () => {
+        const shownBooks = isFiltered() ? books().filter(b => !isBookAvailable(b.id)) : books();
+        setTotalPages(Math.ceil(shownBooks.length / booksPerPage));
+        setShownBooks(shownBooks);
+    }
 
     const handleSearch = () => {
         alert(`Searching for: ${searchTerm()}`);
@@ -95,6 +99,7 @@ function Bookshell() {
     const closeReturnModal = () => {
         setReturnModalOpen(false);
         setSelectedReturnBookID(null);
+        updateShownBooks();
     };
 
     const handleReturn = async () => {
@@ -119,7 +124,8 @@ function Bookshell() {
                     貸出中のみを表示
                     <ToggleButton initialState={isFiltered()} onChange={(isOn) => {
                       setIsFiltered(isOn);
-                      resetRendering();
+                      setCurrentPage(1);
+                      updateShownBooks();
                     }} />
                 </div>
                 <div class="search-container">
@@ -137,7 +143,7 @@ function Bookshell() {
                 {error() && <p>Error: {error()}</p>}
                 {!loading() && !error() && (
                     <ul class={styles.bookList}>
-                        {filterBooks(books()).slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
+                        {shownBooks().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
                             <li key={book.id}>
                                 <div class={styles.bookCover}>
                                     <img src={book.path_to_image} alt={book.title}/>
@@ -184,12 +190,12 @@ function Bookshell() {
                 <div class={styles.pagination}>
                     <button onClick={() => {
                         setCurrentPage(p => Math.max(1, p - 1));
-                        resetRendering();
+                        updateShownBooks();
                     }} disabled={currentPage() === 1}>&lt;</button>
                     <span>{currentPage()} / {totalPages()}</span>
                     <button onClick={() => {
                         setCurrentPage(p => Math.min(totalPages(), p + 1));
-                        resetRendering();
+                        updateShownBooks();
                     }} disabled={currentPage() === totalPages()}>&gt;</button>
                 </div>
             </main>
