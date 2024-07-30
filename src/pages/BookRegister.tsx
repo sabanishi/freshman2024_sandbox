@@ -2,7 +2,7 @@ import {Component, createSignal, onCleanup} from "solid-js";
 import styles from "./BookRegister.module.css";
 import Header from "./Header";
 import BookData from "./BookData";
-import {registerBookData} from "./ToFbCommunicator";
+import {registerBookData,isContainsBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
 import {toIsbn10} from "../utils/IsbnUtils";
 import {v4 as uuidv4} from 'uuid';
@@ -71,12 +71,19 @@ const BookRegister: Component = () => {
             path_to_image: coverPreview()!
         }
 
-        //Firebaseに登録
-        registerBookData(book).then(isNew => {
-            if(isNew){
-                alert("新規登録に成功しました")
+        //データベース中に同じ名前の本が存在するかを調べる
+        isContainsBookData(book).then(isContains =>{
+            if(isContains){
+                let result = confirm("同じ名前の本が既に登録されていますが、登録しますか？");
+                console.log(result);
+                if(result) {
+                    registerBookData(book);
+                    alert("登録に成功しました")
+                }
             }else{
-                alert("上書きしました")
+                //存在しない場合はそのまま登録する
+                registerBookData(book);
+                alert("登録に成功しました")
             }
         });
     };

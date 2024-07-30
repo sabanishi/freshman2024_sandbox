@@ -76,42 +76,23 @@ const fetchRentalData = async (): Promise<RentalData[]> => {
 }
 
 /**
+ * データベースに、bookDataと同じタイトルを持つデータが存在するかを調べる
+ */
+const isContainsBookData = async (bookData:BookData):Promise<boolean>=>{
+    const titleQuery = query(child(my_ref(""),'book'),orderByChild('title'),equalTo(bookData.title));
+    const titleSnapshot = await get(titleQuery);
+    return titleSnapshot.exists();
+}
+
+/**
  * 書籍情報を登録する
  * @param bookData
  * @returns {Promise<boolean>} 新規登録した場合はtrue、上書きした場合はfalseを返す
  */
 const registerBookData = async (bookData: BookData):Promise<boolean> => {
     const rawData = toBookDict(bookData);
-    console.log(rawData);
-
-    //データベース中に、bookDataと同じISBNを持つデータが存在するかを調べる
-    const isbnQuery = query(child(my_ref(""),'book'),orderByChild('isbn13'),equalTo(bookData.isbn13));
-    const bookSnapshot = await get(isbnQuery);
-    if (bookSnapshot.exists()) {
-        //上書きする
-        const data = bookSnapshot.val();
-        for (const id in data) {
-            await set(my_ref(`book/${id}`), rawData);
-            console.log("上書き完了");
-            return false;
-        }
-    }
-
-    const titleQuery = query(child(my_ref(""),'book'),orderByChild('title'),equalTo(bookData.title));
-    const titleSnapshot = await get(titleQuery);
-    if (titleSnapshot.exists()) {
-        //上書きする
-        const data = titleSnapshot.val();
-        for (const id in data) {
-            await set(my_ref(`book/${id}`), rawData);
-            console.log("上書き完了");
-            return false;
-        }
-    }
-
     // データベースに登録
     await set(my_ref(`book/${bookData.id}`), rawData);
-    console.log("登録完了");
     return true;
 }
 
@@ -125,4 +106,4 @@ const updateRentalData = async (data:RentalData,isReturned: boolean) => {
     await set(my_ref(`rental/${data.id}`), toRentalDict(data));
 }
 
-export { registerBookData, registerRentalData,updateRentalData, fetchBookData, fetchRentalData };
+export { registerBookData, registerRentalData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData };
