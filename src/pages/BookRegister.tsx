@@ -4,7 +4,7 @@ import Header from "./Header";
 import BookData from "./BookData";
 import {registerBookData,isContainsBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
-import {toIsbn10} from "../utils/IsbnUtils";
+import {toIsbn10, toIsbn13} from "../utils/IsbnUtils";
 import {v4 as uuidv4} from 'uuid';
 
 const BookRegister: Component = () => {
@@ -161,6 +161,30 @@ const BookRegister: Component = () => {
         closeCameraModal();
     }
 
+    const updateIsbnEvent = () =>{
+        //ISBNが10桁または13桁でない場合は何もしない
+        if(isbn().length != 10 && isbn().length != 13){
+            return;
+        }
+
+        //13桁の場合はISBN-10に変換し、10桁の場合は13桁に変換する
+        let isbn10;
+        let isbn13;
+        if(isbn().length == 13){
+            isbn10 = toIsbn10(isbn());
+            isbn13 = isbn();
+        }else{
+            isbn10 = isbn();
+            isbn13 = toIsbn13(isbn());
+        }
+
+        if(isbn10 == null && isbn13 == null) {
+            return;
+        }
+
+        fetchBookData(isbn10!,isbn13!);
+    }
+
     return (
         <>
             <Header/>
@@ -175,6 +199,7 @@ const BookRegister: Component = () => {
                                 id="isbn"
                                 value={isbn()}
                                 onInput={(e) => setIsbn(e.currentTarget.value)}
+                                onFocusOut={(e)=>{updateIsbnEvent()}}
                             />
                             <button class={styles.cameraButton} onClick={openCameraModal}>📷</button>
                         </div>
