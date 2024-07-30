@@ -14,4 +14,10 @@ const toIsbn10 = (isbn13: string): string | null => {
     return isbn10 + checkDigit;
 }
 
-export { toIsbn10 };
+const toIsbn13 = (isbn10: string): string | null => {
+    if(!isbn10) return null;
+    if(isbn10.length !== 10) return null;
+    return "978" + isbn10;
+}
+
+export { toIsbn10, toIsbn13 };
