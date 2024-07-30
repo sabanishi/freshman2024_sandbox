@@ -1,4 +1,4 @@
-import { JSX, ParentComponent } from 'solid-js';
+import { JSX, ParentComponent, createSignal } from 'solid-js';
 
 type FlexAlignment = 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
 type FlexJustification = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly';
@@ -85,5 +85,68 @@ export const Card: ParentComponent<CardProps> = (props) => {
     >
       {props.children}
     </div>
+  );
+};
+
+interface InputFormProps {
+  onSubmit: (value: string) => void;
+  placeholder?: string;
+  buttonText?: string;
+  buttonColor?: string;
+  buttonTextColor?: string;
+  width?: string;
+  height?: string;
+  gap?: string;
+  clearOnSubmit?: boolean;
+}
+
+export const InputForm: ParentComponent<InputFormProps> = (props) => {
+  const [inputValue, setInputValue] = createSignal('');
+
+  const handleSubmit = (e: Event) => {
+    e.preventDefault();
+    props.onSubmit(inputValue());
+    if (props.clearOnSubmit) {
+      setInputValue('');
+    }
+  };
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <HStack gap={props.gap || '10px'} width={props.width || '100%'} height={props.height || 'auto'}>
+        <input
+          type="text"
+          value={inputValue()}
+          onInput={(e) => setInputValue(e.currentTarget.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={props.placeholder || ''}
+          style={{
+            "flex-grow": "1",
+            "padding": "8px",
+            "border": "1px solid #ccc",
+            "border-radius": "4px 0 0 4px",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            "padding": "8px 16px",
+            "background-color": props.buttonColor || "#007bff",
+            "color": props.buttonTextColor || "white",
+            "border": "none",
+            "border-radius": "0 4px 4px 0",
+            "cursor": "pointer",
+          }}
+        >
+          {props.buttonText || '確定'}
+        </button>
+      </HStack>
+    </form>
   );
 };
