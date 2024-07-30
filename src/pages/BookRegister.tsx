@@ -5,6 +5,7 @@ import BookData from "./BookData";
 import {registerBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
 import {toIsbn10} from "../utils/IsbnUtils";
+import {v4 as uuidv4} from 'uuid';
 
 const BookRegister: Component = () => {
     const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -39,14 +40,31 @@ const BookRegister: Component = () => {
         event.preventDefault();
         // 送信処理を追加する
         console.log({isbn: isbn(), title: title(), author: author(), summary: summary(), cover: cover()});
+
+        let alertMessage = "";
         //項目が1つでも欠けていたら登録しない
-        if (isbn() == "" || title() == "" || author() == "" || summary() == "" || coverPreview() == null) {
-            alert("未入力の項目があります");
+        if (title() == "") {
+            alertMessage += "タイトルを入力してください\n";
+        }
+        if(author()==""){
+            alertMessage += "著者を入力してください\n";
+        }
+        if(summary()==""){
+            alertMessage += "概要を入力してください\n";
+        }
+        if(coverPreview()==null){
+            alertMessage += "表紙を登録してください\n";
+        }
+
+        if(alertMessage != ""){
+            alert(alertMessage);
             return;
         }
 
+        const id = uuidv4();
         const book: BookData = {
-            id: isbn(),
+            id: id,
+            isbn13: isbn(),
             title: title(),
             authors: author().split(","),
             description: summary(),
@@ -54,8 +72,12 @@ const BookRegister: Component = () => {
         }
 
         //Firebaseに登録
-        registerBookData(book).then(() => {
-            alert("登録しました");
+        registerBookData(book).then(isNew => {
+            if(isNew){
+                alert("新規登録に成功しました")
+            }else{
+                alert("上書きしました")
+            }
         });
     };
 
@@ -71,7 +93,7 @@ const BookRegister: Component = () => {
                 alert("ISBNが不正です");
                 return false;
             }
-            setIsbn(isbn10);
+            setIsbn(isbn13);
 
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn13}`);
             if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);

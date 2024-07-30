@@ -1,5 +1,6 @@
 interface BookData {
     id: string;
+    isbn13: string;
     title: string;
     authors: string[];
     description: string;
