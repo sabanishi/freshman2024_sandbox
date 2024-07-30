@@ -59,12 +59,17 @@ const BookRegister: Component = () => {
         });
     };
 
-    const fetchBookData = async (isbn13: string) => {
+    /**
+     * Google Books APIを使って書籍情報を取得する
+     * @param isbn13
+     * @returns {Promise<boolean>} 取得に成功したかどうか
+     */
+    const fetchBookData = async (isbn13: string):Promise<boolean> => {
         try {
             const isbn10 = toIsbn10(isbn13);
             if (!isbn10) {
                 alert("ISBNが不正です");
-                return;
+                return false;
             }
             setIsbn(isbn10);
 
@@ -72,9 +77,9 @@ const BookRegister: Component = () => {
             if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
             const data = await response.json();
             console.log(data);
-            if (data.items.length==0 || data.items[0] == null || data.items[0]["volumeInfo"] == null) {
+            if (data.items==null || data.items.length==0 || data.items[0] == null || data.items[0]["volumeInfo"] == null) {
                 alert("書籍情報が見つかりませんでした");
-                return;
+                return false;
             }
 
             const bookInfo = data.items[0]["volumeInfo"];
@@ -117,12 +122,18 @@ const BookRegister: Component = () => {
         } catch (error) {
             console.error("Failed to fetch book data:", error);
         }
+
+        return true;
     };
 
     const detectIsbn = (isbn13: string) => {
         //ISBN-10に変換
-        fetchBookData(isbn13);
-        closeCameraModal();
+        fetchBookData(isbn13).then(result =>{
+            if(result){
+                //本の情報を取得できたらモーダルを閉じる
+                closeCameraModal();
+            }
+        });
     }
 
     return (
