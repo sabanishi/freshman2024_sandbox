@@ -178,19 +178,21 @@ function Bookshell() {
                 <HStack gap="10px">
                   <BookImage src={book.path_to_image} alt={book.title} />
                   <VStack gap="8px">
-                    <div>
-                      <h3>{book.title}</h3>
-                      <div>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
+                    <h3>{book.title}</h3>
+                    <HStack gap="20px">
+                      <VStack gap="4px">
+                        <div>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
+                        {isBookAvailable(book.id) ?
+                          <button onClick={() => openLendModal(book.id)}>貸出</button> :
+                          <button onClick={() => openReturnModal(book.id)}>返却</button>
+                        }
+                      </VStack>
                       <details>
                         <summary>詳細</summary>
                         <div>{book.authors.join(", ")}</div>
                         <div>{book.description}</div>
                       </details>
-                      {isBookAvailable(book.id) ?
-                        <button onClick={() => openLendModal(book.id)}>貸出</button> :
-                        <button onClick={() => openReturnModal(book.id)}>返却</button>
-                      }
-                    </div>
+                    </HStack>
                   </VStack>
                 </HStack>
               </Card>
