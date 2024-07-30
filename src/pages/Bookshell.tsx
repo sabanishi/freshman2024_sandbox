@@ -6,7 +6,7 @@ import BookData from "./BookData";
 import RentalData from "./RentalData";
 import Modal from "./Modal";
 import ToggleButton from "./ToggleButton";
-import { Card, HStack, VStack } from "./CommonTool";
+import { Card, HStack, InputForm, VStack } from "./CommonTool";
 
 const BookImage = (props: { src: string, alt: string }) => {
   return (
@@ -146,10 +146,6 @@ function Bookshell() {
       <Header />
       <VStack gap="1rem" width="auto" alignItems="center">
         <h2>本棚</h2>
-        <HStack gap="1rem" padding="1rem" width="auto" justify="space-around">
-          <button onClick={resetRendering}>リセット</button>
-          <button onClick={handleSearch}>検索</button>
-        </HStack>
         <HStack>
           <div>貸出中のみを表示</div>
           <ToggleButton initialState={isFiltered()} onChange={(isOn) => {
@@ -158,17 +154,20 @@ function Bookshell() {
             updateShownBooks();
           }} />
         </HStack>
-        <HStack>
-          <div class="search-bar">
-            <input
-              type="text"
-              value={searchTerm()}
-              onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
-              placeholder="Search..."
-            />
-            <button class="search-button" onClick={resetRendering}>🔍</button>
-          </div>
-        </HStack>
+        <InputForm
+          onSubmit={(query) => {
+            setSearchTerm(query)
+            resetRendering();
+          }}
+          placeholder="Search..."
+          buttonText="検索"
+          buttonColor="#45a049"
+          buttonTextColor="white"
+          width="400px"
+          height="40px"
+          gap="0px"
+          clearOnSubmit={false}
+        />
         {loading() && <p>Loading...</p>}
         {error() && <p>Error: {error()}</p>}
         {!loading() && !error() && (
@@ -179,7 +178,7 @@ function Bookshell() {
                   <BookImage src={book.path_to_image} alt={book.title} />
                   <VStack gap="8px">
                     <h3>{book.title}</h3>
-                    <HStack gap="20px">
+                    <HStack gap="20px" width="100%">
                       <VStack gap="4px">
                         <div>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
                         {isBookAvailable(book.id) ?
@@ -233,6 +232,7 @@ function Bookshell() {
             updateShownBooks();
           }} disabled={currentPage() === totalPages()}>&gt;</button>
         </HStack>
+        <div style={{ height: "20px" }}></div>
       </VStack>
     </>
   );
