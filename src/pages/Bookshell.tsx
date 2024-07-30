@@ -1,6 +1,5 @@
 import { createSignal, onMount } from "solid-js";
 import Header from "./Header";
-import styles from "./Bookshell.module.css";
 import { fetchBookData, fetchRentalData, registerRentalData, updateRentalData } from "./ToFbCommunicator";
 import { v4 as uuidv4 } from 'uuid';
 import BookData from "./BookData";
@@ -8,6 +7,32 @@ import RentalData from "./RentalData";
 import Modal from "./Modal";
 import ToggleButton from "./ToggleButton";
 import { Card, HStack, VStack } from "./CommonTool";
+
+const BookImage = (props: { src: string, alt: string }) => {
+  return (
+    <div
+      style={{
+        "min-width": '100px',
+        width: '100px',
+        height: '150px',
+        display: "flex",
+        "border-radius": '4px 0 0 4px',
+        "align-items": "center",
+        "justify-content": "center",
+        overflow: "hidden" /* はみ出た画像を隠す */
+      }}>
+      <img
+        width="100%"
+        height="100%"
+        src={props.src}
+        alt={props.alt}
+        style={{
+          "object-fit": "cover"  /* 画像のアスペクト比を保持しつつ、領域を埋める */
+        }}
+      />
+    </div>
+  );
+}
 
 function Bookshell() {
   const [books, setBooks] = createSignal<BookData[]>([]);
@@ -150,20 +175,16 @@ function Bookshell() {
           <VStack gap="1rem" padding="1rem" width="95%" alignItems="center">
             {shownBooks().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
               <Card padding="4px" borderRadius="4px" width="100%">
-                <HStack>
-                  <div
-                    class={styles.bookCover}
-                    style={{ width: '64px', height: 'auto', "border-radius": '4px 0 0 4px' }}
-                  >
-                    <img src={book.path_to_image} alt={book.title} />
-                  </div>
-                  <VStack gap="8px" width="100%">
-                    <div class={styles.bookInfo}>
+                <HStack gap="10px">
+                  <BookImage src={book.path_to_image} alt={book.title} />
+                  <VStack gap="8px">
+                    <div>
                       <h3>{book.title}</h3>
-                      {isBookAvailable(book.id) ? <p>貸出可</p> : <p>貸出中</p>}
+                      <div>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
                       <details>
                         <summary>詳細</summary>
-                        <p>{getBookDetails(book)}</p>
+                        <div>{book.authors.join(", ")}</div>
+                        <div>{book.description}</div>
                       </details>
                       {isBookAvailable(book.id) ?
                         <button onClick={() => openLendModal(book.id)}>貸出</button> :
