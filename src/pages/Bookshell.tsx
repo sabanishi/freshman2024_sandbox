@@ -6,6 +6,7 @@ import {v4 as uuidv4} from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
 import Modal from "./Modal";
+import ToggleButton from "./ToggleButton";
 
 function Bookshell() {
     const [books, setBooks] = createSignal<BookData[]>([]);
@@ -24,6 +25,8 @@ function Bookshell() {
 
     const [isReturnModalOpen, setReturnModalOpen] = createSignal(false);
     const [selectedReturnBookID, setSelectedReturnBookID] = createSignal<string | null>(null);
+                  
+    const [isFiltered, setIsFiltered] = createSignal(false);
 
     const booksPerPage = 10;
 
@@ -98,12 +101,21 @@ function Bookshell() {
         setRentals([...rentals().filter(r => r.id !== rental.id)]);
         closeReturnModal();
     };
+                  
+    const filterBooks = (books: BookData[]) => {
+      if (!isFiltered()) return books;
+      return books.filter(b => !isBookAvailable(b.id));
+    }
 
     return (
         <>
             <Header/>
             <main>
                 <h2>本棚</h2>
+                <div>
+                    貸出中のみを表示
+                    <ToggleButton initialState={isFiltered()} onChange={setIsFiltered} />
+                </div>
                 <div class="search-container">
                     <div class="search-bar">
                         <input
