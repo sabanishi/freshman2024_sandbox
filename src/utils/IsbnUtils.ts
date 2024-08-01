@@ -17,7 +17,18 @@ const toIsbn10 = (isbn13: string): string | null => {
 const toIsbn13 = (isbn10: string): string | null => {
     if(!isbn10) return null;
     if(isbn10.length !== 10) return null;
-    return "978" + isbn10;
+    //先頭に`978`を足して、末尾の1桁を除く
+    const src = `978${isbn10.slice(0, 9)}`;
+
+    //先頭の桁から順に数を掛けて合計する
+    const sum = src.split('').map(s => parseInt(s))
+        .reduce((p, c, i) => p + ((i % 2 === 0) ? c : c * 3));
+
+    //合計を10で割った余りを10から引く（※引き算の結果が10の時は0とする）
+    const rem = 10 - sum % 10;
+    const checkdigit = rem === 10 ? 0 : rem;
+
+    return `${src}${checkdigit}`;
 }
 
 export { toIsbn10, toIsbn13 };
