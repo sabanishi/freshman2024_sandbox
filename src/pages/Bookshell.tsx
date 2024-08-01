@@ -192,7 +192,10 @@ function Bookshell() {
                         <details>
                           <summary>詳細</summary>
                           <div>{book.authors.join(", ")}</div>
-                          <div>{book.description}</div>
+                          <div 
+                            style={{"font-size": "0.8rem"}}
+                            innerHTML={book.description.replace(/\n/g, "<br />")}
+                          ></div>
                         </details>
                       </HStack>
                     </VStack>
