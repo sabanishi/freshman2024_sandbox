@@ -8,13 +8,13 @@ import Modal from "./Modal";
 import ToggleButton from "./ToggleButton";
 import { Card, HStack, InputForm, VStack } from "./CommonTool";
 
-const BookImage = (props: { src: string, alt: string }) => {
+const BookImage = (props: { width?: string, height?: string, src: string, alt: string }) => {
   return (
     <div
       style={{
         "min-width": '100px',
-        width: '100px',
-        height: '150px',
+        width: props.width || '100px',
+        height: props.height || '150px',
         display: "flex",
         "border-radius": '4px 0 0 4px',
         "align-items": "center",
@@ -61,6 +61,7 @@ function Bookshell() {
 
   const resetRendering = (async () => {
     try {
+      setTotalPages(0);
       setLoading(true);
       const fetchedBooks = await fetchBookData(searchTerm());
       const fetchedRentals = await fetchRentalData();
@@ -163,7 +164,8 @@ function Bookshell() {
           buttonText="検索"
           buttonColor="#45a049"
           buttonTextColor="white"
-          width="400px"
+          maxwidth="500px"
+          width="calc(100% - 20px)"
           height="40px"
           gap="0px"
           clearOnSubmit={false}
@@ -171,28 +173,30 @@ function Bookshell() {
         {loading() && <p>Loading...</p>}
         {error() && <p>Error: {error()}</p>}
         {!loading() && !error() && (
-          <VStack gap="1rem" padding="1rem" width="95%" alignItems="center">
+          <VStack gap="1rem" padding="1rem" width="95%" maxwidth="800px" alignItems="center">
             {shownBooks().slice((currentPage() - 1) * booksPerPage, currentPage() * booksPerPage).map(book => (
               <Card padding="4px" borderRadius="4px" width="100%">
                 <HStack gap="10px">
-                  <BookImage src={book.path_to_image} alt={book.title} />
-                  <VStack gap="8px">
-                    <h3>{book.title}</h3>
-                    <HStack gap="20px" width="100%">
-                      <VStack gap="4px">
-                        <div>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
-                        {isBookAvailable(book.id) ?
-                          <button onClick={() => openLendModal(book.id)}>貸出</button> :
-                          <button onClick={() => openReturnModal(book.id)}>返却</button>
-                        }
-                      </VStack>
-                      <details>
-                        <summary>詳細</summary>
-                        <div>{book.authors.join(", ")}</div>
-                        <div>{book.description}</div>
-                      </details>
-                    </HStack>
-                  </VStack>
+                  <BookImage width="100px" height="150px" src={book.path_to_image} alt={book.title} />
+                  <HStack width="100%" justify="center">
+                    <VStack justify="flex-start" width="100%" maxwidth="500px">
+                      <h3>{book.title}</h3>
+                      <HStack gap="20px" width="100%">
+                        <VStack gap="4px">
+                          <div style={{"white-space": "nowrap"}}>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
+                          {isBookAvailable(book.id) ?
+                            <button style={{ "white-space": "nowrap" }} onClick={() => openLendModal(book.id)}>貸出</button> :
+                            <button style={{ "white-space": "nowrap" }} onClick={() => openReturnModal(book.id)}>返却</button>
+                          }
+                        </VStack>
+                        <details>
+                          <summary>詳細</summary>
+                          <div>{book.authors.join(", ")}</div>
+                          <div>{book.description}</div>
+                        </details>
+                      </HStack>
+                    </VStack>
+                  </HStack>
                 </HStack>
               </Card>
             ))}
