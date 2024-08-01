@@ -19,6 +19,7 @@
     "@solidjs/router": "^0.13.5",
     "@zxing/library": "^0.21.1",
     "firebase": "^9.23.0",
+    "isbnjs": "^0.2.2",
     "quagga": "^0.12.1",
     "solid-js": "^1.8.11",
     "uuid": "^10.0.0"

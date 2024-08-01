@@ -6,6 +6,8 @@ import {registerBookData,isContainsBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
 import {toIsbn10, toIsbn13} from "../utils/IsbnUtils";
 import {v4 as uuidv4} from 'uuid';
+// isbnjs
+import * as ISBN from "isbnjs";
 
 const BookRegister: Component = () => {
     const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -88,6 +90,34 @@ const BookRegister: Component = () => {
         });
     };
 
+    const fetchDescription = async (isbn13: string): Promise<string> => {
+        const placeholder = "ホゲホゲ";
+        let description = placeholder;
+
+        const isbn10 = ISBN.parse(isbn13).asIsbn10(false);
+        const amazonPageSrc = "https://www.amazon.co.jp/dp/" + isbn10;
+        console.log(amazonPageSrc);
+        const url = 'https://corsproxy.io/?' + encodeURIComponent(amazonPageSrc);
+        console.log(url);
+        const amazonPageResponse = await fetch(url);
+        const amazonPageText = await amazonPageResponse.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(amazonPageText, "text/html");
+
+                                                    //  ".celwidget > .a-expander-collapsed-height .a-expander-content :first-child"
+        const descriptionElement = doc.querySelector(".celwidget .celwidget > .a-expander-collapsed-height .a-expander-content");
+        console.log(descriptionElement);
+        if (descriptionElement) {
+            const htmlContent = descriptionElement.innerHTML;
+            const textContent = htmlContent.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+            console.log(textContent);
+            description = textContent;
+        } else {
+            console.log("Description element not found.");
+        }
+        console.log(descriptionElement?.children);
+        return description;
+    }
 
     /**
      * Google Books APIを使って書籍情報を取得する
@@ -96,6 +126,14 @@ const BookRegister: Component = () => {
      */
     const fetchBookData = async (isbn10: string,isbn13:string):Promise<boolean> => {
         try {
+            const isbn10 = toIsbn10(isbn13);
+
+            const description: string = await fetchDescription(isbn13);
+
+            if (!isbn10) {
+                alert("ISBNが不正です");
+                return false;
+            }
             setIsbn(isbn13);
 
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn13}`);
@@ -113,7 +151,7 @@ const BookRegister: Component = () => {
             const subtitle: string = bookInfo["subtitle"];
             const title = subtitle ? mainTitle + ": " + subtitle : mainTitle;
             const authors: string[] = bookInfo["authors"];
-            const description: string = "ほげほげ";
+            
             const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/" + isbn10 + ".09.LZZZZZZZ.jpg";
 
             //alert文を作成
@@ -227,7 +265,7 @@ const BookRegister: Component = () => {
                         />
                     </div>
                     <div class={styles.field}>
-                        <label for="summary">概要</label>
+                        <label for="summary">概要 (Amazon商品ページより引用)</label>
                         <textarea
                             id="summary"
                             value={summary()}
