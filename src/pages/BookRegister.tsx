@@ -243,7 +243,9 @@ const BookRegister: Component = () => {
                                 onInput={(e) => setIsbn(e.currentTarget.value)}
                                 onFocusOut={(e)=>{updateIsbnEvent()}}
                             />
-                            <button class={styles.cameraButton} onClick={openCameraModal}>📷</button>
+                            <button class={styles.cameraButton} onClick={openCameraModal}>
+                                <img src="src/assets/camera.png" class={styles.cameraIcon}></img>
+                            </button>
                         </div>
                     </div>
                     <div class={styles.field}>
