@@ -2,21 +2,29 @@
  * ISBN-13をISBN-10に変換する
  */
 const toIsbn10 = (isbn13: string): string | null => {
-    if (!isbn13) return null;
-    if (isbn13.length !== 13) return null;
-    if (!isbn13.startsWith("978")) return null;
-    const isbn10 = isbn13.substring(3, 12);
+    // Validate input
+    if (isbn13.length !== 13 || !isbn13.startsWith('978') && !isbn13.startsWith('979')) {
+        throw new Error('Invalid ISBN-13 format');
+    }
+
+    // Remove the '978' or '979' prefix and the last digit (check digit)
+    const isbn10Base = isbn13.substring(3, 12);
+
+    // Calculate the ISBN-10 check digit
     let sum = 0;
     for (let i = 0; i < 9; i++) {
-        sum += parseInt(isbn10[i]) * (10 - i);
+        sum += (i + 1) * parseInt(isbn10Base[i]);
     }
-    const checkDigit = (11 - sum % 11) % 11;
-    return isbn10 + checkDigit;
+    let checkDigit = sum % 11;
+    let checkDigitStr = (checkDigit === 10) ? 'X' : checkDigit.toString();
+
+    // Return the ISBN-10
+    return isbn10Base + checkDigitStr;
 }
 
 const toIsbn13 = (isbn10: string): string | null => {
-    if(!isbn10) return null;
-    if(isbn10.length !== 10) return null;
+    if (!isbn10) return null;
+    if (isbn10.length !== 10) return null;
     //先頭に`978`を足して、末尾の1桁を除く
     const src = `978${isbn10.slice(0, 9)}`;
 
