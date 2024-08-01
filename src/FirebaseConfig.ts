@@ -18,6 +18,6 @@ const db = firebase.database(app);
 
 const my_ref = (path:string) =>ref(db,`${port}/${path}`);
 
-const port = "dev";
+const port = "prd";
 
 export { my_ref };
