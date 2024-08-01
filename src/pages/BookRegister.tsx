@@ -17,6 +17,7 @@ const BookRegister: Component = () => {
     const [summary, setSummary] = createSignal("");
     const [cover, setCover] = createSignal<File | null>(null);
     const [coverPreview, setCoverPreview] = createSignal<string | null>(null);
+    const [amazonPageSrc, setAmazonPageSrc] = createSignal<string | null>(null);
     let fileInputRef: HTMLInputElement | undefined;
 
     const openCameraModal = () => {
@@ -103,6 +104,7 @@ const BookRegister: Component = () => {
 
         const isbn10 = ISBN.parse(isbn13).asIsbn10(false);
         const amazonPageSrc = "https://www.amazon.co.jp/dp/" + isbn10;
+        setAmazonPageSrc(amazonPageSrc);
         console.log(amazonPageSrc);
         const url = 'https://corsproxy.io/?' + encodeURIComponent(amazonPageSrc);
         console.log(url);
@@ -274,7 +276,11 @@ const BookRegister: Component = () => {
                         />
                     </div>
                     <div class={styles.field}>
-                        <label for="summary">概要 (Amazon商品ページより引用)</label>
+                        {amazonPageSrc() ? (
+                            <label for="summary">概要 (<a href={amazonPageSrc()!} target="_blank">Amazon商品ページ</a>より引用)</label>
+                        ) : (
+                            <label for="summary">概要</label>
+                        )}
                         <textarea
                             id="summary"
                             value={summary()}
