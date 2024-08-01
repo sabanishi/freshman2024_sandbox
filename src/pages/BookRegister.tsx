@@ -109,7 +109,9 @@ const BookRegister: Component = () => {
 
             const bookInfo = data.items[0]["volumeInfo"];
 
-            const title: string = bookInfo["title"]
+            const mainTitle: string = bookInfo["title"]
+            const subtitle: string = bookInfo["subtitle"];
+            const title = subtitle ? mainTitle + ": " + subtitle : mainTitle;
             const authors: string[] = bookInfo["authors"];
             const description: string = "ほげほげ";
             const imageSrc = "https://images-na.ssl-images-amazon.com/images/P/" + isbn10 + ".09.LZZZZZZZ.jpg";
