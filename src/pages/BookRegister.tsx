@@ -234,8 +234,23 @@ const BookRegister: Component = () => {
         fetchBookData(isbn10!,isbn13!);
     }
 
+    const submitButton = (
+        <button type="submit" class={styles.submitButton} onClick={handleSubmit}>登録</button>
+    )
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            // ボタンのクリックイベントを発火させる
+            const submitButton = document.querySelector(`.${styles.submitButton}`) as HTMLButtonElement;
+            if (submitButton) {
+                submitButton.click();
+            }
+        }
+    };
+      
     return (
-        <>
+        <div onKeyDown={handleKeyDown}>
             <Header/>
             <div class={styles.container}>
                 <h2>新規登録</h2>
@@ -288,12 +303,12 @@ const BookRegister: Component = () => {
                     {coverPreview() && (
                         <img src={coverPreview()!} alt="Cover Preview" class={styles.coverPreview}/>
                     )}
-                    <button type="submit" class={styles.submitButton} onClick={handleSubmit}>登録</button>
+                    {submitButton}
                 </div>
 
                 <Camera isOpen={isCameraModalOpen()} onClose={closeCameraModal} onDetectIsbn={detectIsbn}></Camera>
             </div>
-        </>
+        </div>
     );
 };
 
