@@ -1,12 +1,13 @@
 import { createSignal, onMount } from "solid-js";
 import Header from "./Header";
-import { fetchBookData, fetchRentalData, registerRentalData, updateRentalData } from "./ToFbCommunicator";
+import {deleteBookData, fetchBookData, fetchRentalData, registerRentalData, updateRentalData} from "./ToFbCommunicator";
 import { v4 as uuidv4 } from 'uuid';
 import BookData from "./BookData";
 import RentalData from "./RentalData";
 import Modal from "./Modal";
 import ToggleButton from "./ToggleButton";
 import { Card, HStack, InputForm, VStack } from "./CommonTool";
+import BookEditPanel from "./BookEditPanel";
 
 const BookImage = (props: { width?: string, height?: string, src: string, alt: string }) => {
   return (
@@ -54,6 +55,7 @@ function Bookshell() {
   const [selectedReturnBookID, setSelectedReturnBookID] = createSignal<string | null>(null);
 
   const [isFiltered, setIsFiltered] = createSignal(false);
+  const [isEditModalOpen, setEditModalOpen] = createSignal(false);
 
   const booksPerPage = 10;
 
@@ -142,6 +144,25 @@ function Bookshell() {
     return books.filter(b => !isBookAvailable(b.id));
   }
 
+  const deleteBook =(book:BookData) =>{
+    const result = (confirm("本当に削除しますか？"));
+    if(result){
+        console.log(book);
+        deleteBookData(book).then(()=>{
+          resetRendering();
+        });
+    }
+  }
+
+  const editBook = (id:string) =>{
+    console.log(id);
+    setEditModalOpen(true);
+  }
+
+  const closeEditBook = ()=>{
+    setEditModalOpen(false);
+  }
+
   return (
     <>
       <Header />
@@ -201,6 +222,14 @@ function Bookshell() {
                       </HStack>
                     </VStack>
                   </HStack>
+                  <VStack justify="flex-start" gap="10px">
+                    <button onClick={e=>deleteBook(book)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
+                      <img src="src/assets/trash.png" style={{"width": "80%", "height": "auto"}}></img>
+                    </button>
+                    <button onClick={e=>editBook(book.id)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
+                      <img src="src/assets/pencil.png" style={{"width": "80%", "height": "auto"}}></img>
+                    </button>
+                  </VStack>
                 </HStack>
               </Card>
             ))}
@@ -209,7 +238,7 @@ function Bookshell() {
         <Modal isOpen={isLendModalOpen()} onClose={closeLendModal} title="この本を借りますか？">
           <div>
             <div>
-              貸出人
+            貸出人
               <input
                 type="text"
                 placeholder="東工 太郎"
@@ -242,6 +271,8 @@ function Bookshell() {
         </HStack>
         <div style={{ height: "20px" }}></div>
       </VStack>
+
+      <BookEditPanel isOpen={isEditModalOpen()} onClose={closeEditBook}></BookEditPanel>
     </>
   );
 }
