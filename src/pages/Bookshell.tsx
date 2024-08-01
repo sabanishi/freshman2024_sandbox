@@ -158,6 +158,7 @@ function Bookshell() {
         <InputForm
           onSubmit={(query) => {
             setSearchTerm(query)
+            setCurrentPage(1);
             resetRendering();
           }}
           placeholder="Search..."
