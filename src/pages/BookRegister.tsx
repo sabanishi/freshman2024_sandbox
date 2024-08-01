@@ -135,6 +135,8 @@ const BookRegister: Component = () => {
             setTitle(title);
             if (authors != null) {
                 setAuthor(authors.join(", "));
+            }else{
+                setAuthor("")
             }
             setSummary(description);
             setCoverPreview(imageSrc);
