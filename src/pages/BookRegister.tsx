@@ -38,6 +38,13 @@ const BookRegister: Component = () => {
         }
     };
 
+    const askForNextRegistration = () => {
+        const choice = confirm('登録できました！\n別の本のカメラ読み取りを続行しますか？');
+        if (choice) {
+            openCameraModal();
+        }
+    }
+
     const handleSubmit = (event: Event) => {
         event.preventDefault();
         // 送信処理を追加する
@@ -80,12 +87,12 @@ const BookRegister: Component = () => {
                 console.log(result);
                 if(result) {
                     registerBookData(book);
-                    alert("登録に成功しました")
+                    askForNextRegistration();
                 }
             }else{
                 //存在しない場合はそのまま登録する
                 registerBookData(book);
-                alert("登録に成功しました")
+                askForNextRegistration();
             }
         });
     };
