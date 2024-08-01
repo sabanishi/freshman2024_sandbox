@@ -1,7 +1,8 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
-import { my_ref } from '../FirebaseConfig';
+import { my_ref ,storage} from '../FirebaseConfig';
 import { set, get, child,query,orderByChild,equalTo } from "firebase/database";
+import { getStorage, ref, uploadBytes,getDownloadURL} from "firebase/storage";
 
 const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
@@ -23,6 +24,26 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
         lend_time: data.lend_time.toString(),
         return_time: data.return_time.toString()
     };
+}
+
+const uploadImage = async (file: File) => {
+    const storageRef = ref(storage, `images/${file.name}`);
+
+    try {
+        // ファイルをCloud Storageにアップロード
+        const snapshot = await uploadBytes(storageRef, file);
+
+        // アップロードしたファイルのURLを取得
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        console.log("File uploaded successfully!");
+        console.log("File available at:", downloadURL);
+
+        return downloadURL; // 取得したURLを返す
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        throw error; // エラーが発生した場合、エラーを投げる
+    }
 }
 
 const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
@@ -106,4 +127,4 @@ const updateRentalData = async (data:RentalData,isReturned: boolean) => {
     await set(my_ref(`rental/${data.id}`), toRentalDict(data));
 }
 
-export { registerBookData, registerRentalData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData };
+export { registerBookData, registerRentalData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData,uploadImage};
