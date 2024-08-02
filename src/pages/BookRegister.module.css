@@ -1,50 +1,24 @@
-.container {
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h2 {
-    text-align: center;
-    color: #333;
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-}
-
-.field {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.inputGroup {
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
-
-input[type="text"],
-textarea,
-input[type="file"] {
-    flex: 1;
+.inputfield {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
-    min-width: 0; /* Allow input to shrink */
 }
 
-textarea {
+.textarea {
     resize: vertical;
+    min-height: 40px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.inputfile {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 .cameraButton {
@@ -53,8 +27,17 @@ textarea {
     border: 1px solid #ccc;
     border-radius: 5px;
     cursor: pointer;
-    padding: 10px;
-    flex-shrink: 0; /* Prevent button from shrinking */
+    padding: 0;
+    height: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cameraIcon{
+    height: 80%;
+    width: auto;
 }
 
 .coverPreview {
@@ -78,18 +61,4 @@ textarea {
 
 .submitButton:hover {
     background: #45a049;
-}
-
-@media (max-width: 600px) {
-    .inputGroup {
-        width: 100%;
-    }
-
-    input[type="text"] {
-        flex: 1;
-    }
-
-    .cameraButton {
-        margin-left: 10px;
-    }
 }

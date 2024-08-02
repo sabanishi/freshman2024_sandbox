@@ -25,6 +25,10 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
     };
 }
 
+const deleteBookData = async (data:BookData) =>{
+    await set(my_ref(`book/${data.id}`),null);
+}
+
 const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
     const books: BookData[] = [];
 
@@ -106,4 +110,4 @@ const updateRentalData = async (data:RentalData,isReturned: boolean) => {
     await set(my_ref(`rental/${data.id}`), toRentalDict(data));
 }
 
-export { registerBookData, registerRentalData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData };
+export { registerBookData, registerRentalData,deleteBookData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData };
