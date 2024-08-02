@@ -257,7 +257,7 @@ const BookRegister: Component = () => {
               style={{ "width": "100%" }}
             />
             <button class={styles.cameraButton} onClick={openCameraModal}>
-              <img src="src/assets/camera.png" class={styles.cameraIcon}></img>
+              <img src="/camera.png" class={styles.cameraIcon}></img>
             </button>
           </HStack>
         </VStack>
