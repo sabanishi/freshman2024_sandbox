@@ -2,7 +2,7 @@ import {Component, createSignal, onCleanup} from "solid-js";
 import styles from "./BookRegister.module.css";
 import Header from "./Header";
 import BookData from "./BookData";
-import {registerBookData, isContainsBookData} from "./ToFbCommunicator";
+import {registerBookData, isContainsBookData,uploadImage} from "./ToFbCommunicator";
 import Camera from "./Camera";
 import {toIsbn10, toIsbn13} from "../utils/IsbnUtils";
 import {v4 as uuidv4} from 'uuid';
@@ -16,8 +16,8 @@ const BookRegister: Component = () => {
     const [title, setTitle] = createSignal("");
     const [author, setAuthor] = createSignal("");
     const [summary, setSummary] = createSignal("");
-    const [cover, setCover] = createSignal<File | null>(null);
     const [coverPreview, setCoverPreview] = createSignal<string | null>(null);
+    const [imageUrl, setImageUrl] = createSignal<string>("");
     const [amazonPageSrc, setAmazonPageSrc] = createSignal<string | null>(null);
     const [isFetchingBookInfo, setIsFetchingBookInfo] = createSignal(false);
     let fileInputRef: HTMLInputElement | undefined;
@@ -31,11 +31,18 @@ const BookRegister: Component = () => {
 
     const handleCoverUpload = (event: Event) => {
         const input = event.target as HTMLInputElement;
-        if (input.files && input.files[0]) {
-            setCover(input.files[0]);
+        if (input.files && input.files[0]!=null) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 setCoverPreview(e.target?.result as string);
+
+                //Firebase Storageに画像をアップロード
+                if(input.files !=null){
+                    const imageId = uuidv4();
+                    uploadImage(input.files[0],imageId).then(url=>{
+                        setImageUrl(url);
+                    })
+                }
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -62,7 +69,7 @@ const BookRegister: Component = () => {
         if (summary() == "") {
             alertMessage += "概要を入力してください\n";
         }
-        if (coverPreview() == null) {
+        if (coverPreview() == null || imageUrl()=="") {
             alertMessage += "表紙を登録してください\n";
         }
 
@@ -78,7 +85,7 @@ const BookRegister: Component = () => {
             title: title(),
             authors: author().split(","),
             description: summary(),
-            path_to_image: coverPreview()!
+            path_to_image: imageUrl()!
         }
 
         //データベース中に同じ名前の本が存在するかを調べる
@@ -214,6 +221,7 @@ const BookRegister: Component = () => {
             }
             setSummary(description);
             setCoverPreview(imageSrc);
+            setImageUrl(imageSrc);
             //ファイル選択をリセットする
             fileInputRef!.value = "";
 
