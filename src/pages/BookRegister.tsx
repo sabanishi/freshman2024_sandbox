@@ -10,6 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 import * as ISBN from "isbnjs";
 import {HStack, VStack} from "./CommonTool";
 import {fetchBookInfo} from "../utils/FetchBookUtils";
+import NowLoadingImage from "./NowLoadingImage";
 
 const BookRegister: Component = () => {
     const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -20,6 +21,7 @@ const BookRegister: Component = () => {
     const [cover, setCover] = createSignal<File | null>(null);
     const [coverPreview, setCoverPreview] = createSignal<string | null>(null);
     const [amazonPageSrc, setAmazonPageSrc] = createSignal<string | null>(null);
+    const [isFetchingBookInfo, setIsFetchingBookInfo] = createSignal(false);
     let fileInputRef: HTMLInputElement | undefined;
 
     const openCameraModal = () => {
@@ -128,6 +130,13 @@ const BookRegister: Component = () => {
      * @returns {Promise<boolean>} 取得に成功したかどうか
      */
     const fetchBookData = async (isbn10: string, isbn13: string): Promise<boolean> => {
+        setIsFetchingBookInfo(true);
+        const result = await fetchBookDataCore(isbn10, isbn13);
+        setIsFetchingBookInfo(false);
+        return result;
+    }
+
+    const fetchBookDataCore = async (isbn10: string, isbn13: string): Promise<boolean> => {
         try {
             const isbn10 = toIsbn10(isbn13);
 
@@ -195,6 +204,7 @@ const BookRegister: Component = () => {
         if (!isbn10) {
             return;
         }
+
         fetchBookData(isbn10, isbn13);
         closeCameraModal();
     }
@@ -231,7 +241,12 @@ const BookRegister: Component = () => {
                     新規登録
                 </h2>
                 <VStack gap="10px">
-                    <label for="isbn"><b>ISBN (13桁または10桁の識別子)</b></label>
+                    <label for="isbn">
+                        <HStack gap="10px">
+                            <b>ISBN (13桁または10桁の識別子)</b>
+                            <NowLoadingImage isOpen={isFetchingBookInfo()}></NowLoadingImage>
+                        </HStack>
+                    </label>
                     <HStack height="38px">
                         <input
                             type="text"
