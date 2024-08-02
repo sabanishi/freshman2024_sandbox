@@ -8,7 +8,7 @@ import { toIsbn10, toIsbn13 } from "../utils/IsbnUtils";
 import { v4 as uuidv4 } from 'uuid';
 // isbnjs
 import * as ISBN from "isbnjs";
-import { VStack } from "./CommonTool";
+import { HStack, VStack } from "./CommonTool";
 
 const BookRegister: Component = () => {
   const [isCameraModalOpen, setCameraModalOpen] = createSignal(false);
@@ -246,18 +246,19 @@ const BookRegister: Component = () => {
         </h2>
         <VStack gap="10px">
           <label for="isbn"><b>ISBN (13桁または10桁の識別子)</b></label>
-          <div class={styles.inputGroup}>
+          <HStack height="40px">
             <input
-              type="text"
+              type="number"
               id="isbn"
               value={isbn()}
               onInput={(e) => setIsbn(e.currentTarget.value)}
               onFocusOut={(e) => { updateIsbnEvent() }}
+              class={styles.inputfield}
             />
             <button class={styles.cameraButton} onClick={openCameraModal}>
               <img src="src/assets/camera.png" class={styles.cameraIcon}></img>
             </button>
-          </div>
+          </HStack>
         </VStack>
         <VStack gap="10px">
           <label for="title"><b>タイトル</b></label>
@@ -266,6 +267,7 @@ const BookRegister: Component = () => {
             id="title"
             value={title()}
             onInput={(e) => setTitle(e.currentTarget.value)}
+            class={styles.inputfield}
           />
         </VStack>
         <VStack gap="10px">
@@ -275,6 +277,7 @@ const BookRegister: Component = () => {
             id="author"
             value={author()}
             onInput={(e) => setAuthor(e.currentTarget.value)}
+            class={styles.inputfield}
           />
         </VStack>
         <VStack gap="10px">
@@ -287,11 +290,19 @@ const BookRegister: Component = () => {
             id="summary"
             value={summary()}
             onInput={(e) => setSummary(e.currentTarget.value)}
+            class={styles.textarea}
           ></textarea>
         </VStack>
         <VStack gap="10px">
           <label for="cover"><b>表紙</b></label>
-          <input type="file" id="cover" accept="image/*" onChange={handleCoverUpload} ref={fileInputRef} />
+          <input 
+            type="file"
+            id="cover" 
+            accept="image/*" 
+            onChange={handleCoverUpload} 
+            ref={fileInputRef} 
+            class={styles.inputfile}
+          />
         </VStack>
         {coverPreview() && (
           <img src={coverPreview()!} alt="Cover Preview" class={styles.coverPreview} />
