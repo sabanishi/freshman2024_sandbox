@@ -6,8 +6,6 @@ import {registerBookData, isContainsBookData} from "./ToFbCommunicator";
 import Camera from "./Camera";
 import {toIsbn10, toIsbn13} from "../utils/IsbnUtils";
 import {v4 as uuidv4} from 'uuid';
-// isbnjs
-import * as ISBN from "isbnjs";
 import {HStack, VStack} from "./CommonTool";
 import {fetchBookInfo} from "../utils/FetchBookUtils";
 import NowLoadingImage from "./NowLoadingImage";
@@ -99,11 +97,27 @@ const BookRegister: Component = () => {
         });
     };
 
+    /**
+     * セレクタを使ってAmazonの商品ページから書籍の概要を取得する
+     * @param selector
+     * @param document
+     * @returns {string} 概要
+     */
+    const fetchDescriptionFromSelector = (document: Document, selector: string): string => {
+        const descriptionElement = document.querySelector(selector);
+        console.log(descriptionElement);
+        if (!descriptionElement) {
+            return "";
+        }
+        const htmlContent = descriptionElement.innerHTML;
+        const textContent = htmlContent.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+        return textContent;
+    }
+
     const fetchDescription = async (isbn13: string): Promise<string> => {
         const placeholder = "ホゲホゲ";
-        let description = placeholder;
 
-        const isbn10 = ISBN.parse(isbn13).asIsbn10(false);
+        const isbn10 = toIsbn10(isbn13);
         const amazonPageSrc = "https://www.amazon.co.jp/dp/" + isbn10;
         setAmazonPageSrc(amazonPageSrc);
         const url = 'https://corsproxy.io/?' + encodeURIComponent(amazonPageSrc);
@@ -113,15 +127,30 @@ const BookRegister: Component = () => {
         const doc = parser.parseFromString(amazonPageText, "text/html");
 
         //  ".celwidget > .a-expander-collapsed-height .a-expander-content :first-child"
-        const descriptionElement = doc.querySelector(".celwidget .celwidget > .a-expander-collapsed-height .a-expander-content");
-        if (descriptionElement) {
-            const htmlContent = descriptionElement.innerHTML;
-            const textContent = htmlContent.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
-            description = textContent;
-        } else {
-            console.error("Description element not found.");
+        let decs1 = fetchDescriptionFromSelector(doc, ".celwidget .celwidget > .a-expander-collapsed-height .a-expander-content");
+        if (decs1 != "") {
+            return decs1;
         }
-        return description;
+        
+        // .a-expander-collapsed-height .a-expander-content .celwidget > p
+        let decs2 = fetchDescriptionFromSelector(doc, ".a-expander-collapsed-height .a-expander-content .celwidget > p");
+        if (decs2 != "") {
+            return decs2;
+        }
+        
+        // .a-section .a-tab-content .a-expander-collapsed-height .celwidget
+        let decs3 = fetchDescriptionFromSelector(doc, ".a-section .a-tab-content .a-expander-collapsed-height .celwidget");
+        if (decs3 != "") {
+            return decs3;
+        }
+
+        // #dp-container > .celwidget > .a-section:has(.a-section)
+        let decs4 = fetchDescriptionFromSelector(doc, "#dp-container > .celwidget > .a-section > .a-section");
+        if (decs4 != "") {
+            return decs4;
+        }
+
+        return placeholder;
     }
 
     /**
