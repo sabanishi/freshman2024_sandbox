@@ -246,7 +246,7 @@ const BookRegister: Component = () => {
         </h2>
         <VStack gap="10px">
           <label for="isbn"><b>ISBN (13桁または10桁の識別子)</b></label>
-          <HStack height="40px">
+          <HStack height="38px">
             <input
               type="number"
               id="isbn"
@@ -254,6 +254,7 @@ const BookRegister: Component = () => {
               onInput={(e) => setIsbn(e.currentTarget.value)}
               onFocusOut={(e) => { updateIsbnEvent() }}
               class={styles.inputfield}
+              style={{ "width": "100%" }}
             />
             <button class={styles.cameraButton} onClick={openCameraModal}>
               <img src="src/assets/camera.png" class={styles.cameraIcon}></img>
