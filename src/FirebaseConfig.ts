@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import {ref} from "firebase/database";
+import {getStorage} from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCahwePB9Eth4yrGJprSVTq9a19r81Wxmg",
@@ -15,9 +16,10 @@ const firebaseConfig = {
 
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database(app);
+const storage = getStorage(app);
 
 const my_ref = (path:string) =>ref(db,`${port}/${path}`);
 
 const port = "dev";
 
-export { my_ref };
+export { my_ref,storage};

@@ -1,7 +1,8 @@
 import RentalData from './RentalData';
 import BookData from './BookData';
-import { my_ref } from '../FirebaseConfig';
+import { my_ref,storage } from '../FirebaseConfig';
 import { set, get, child,query,orderByChild,equalTo } from "firebase/database";
+import{ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 
 const toBookDict = (data: BookData): { [key: string]: any } => {
     return {
@@ -27,6 +28,18 @@ const toRentalDict = (data: RentalData): { [key: string]: any } => {
 
 const deleteBookData = async (data:BookData) =>{
     await set(my_ref(`book/${data.id}`),null);
+}
+
+const uploadImage = async (file:File,imageId:string)=>{
+    const storageRef = ref(storage,`images/${imageId}`);
+
+    try{
+        const snapshot = await uploadBytes(storageRef,file);
+        return await getDownloadURL(snapshot.ref);
+    }catch(e){
+        console.error(e);
+        return "";
+    }
 }
 
 const fetchBookData = async (searchTerm:string): Promise<BookData[]> => {
@@ -110,4 +123,4 @@ const updateRentalData = async (data:RentalData,isReturned: boolean) => {
     await set(my_ref(`rental/${data.id}`), toRentalDict(data));
 }
 
-export { registerBookData, registerRentalData,deleteBookData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData };
+export { registerBookData, registerRentalData,deleteBookData,isContainsBookData, updateRentalData, fetchBookData, fetchRentalData,uploadImage };
