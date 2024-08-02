@@ -224,10 +224,10 @@ function Bookshell() {
                   </HStack>
                   <VStack justify="flex-start" gap="10px">
                     <button onClick={e=>deleteBook(book)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
-                      <img src="src/assets/trash.png" style={{"width": "80%", "height": "auto"}}></img>
+                      <img src="./assets/trash.png" style={{"width": "80%", "height": "auto"}}></img>
                     </button>
                     <button onClick={e=>editBook(book.id)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
-                      <img src="src/assets/pencil.png" style={{"width": "80%", "height": "auto"}}></img>
+                      <img src="./assets/pencil.png" style={{"width": "80%", "height": "auto"}}></img>
                     </button>
                   </VStack>
                 </HStack>
