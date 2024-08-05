@@ -163,6 +163,39 @@ function Bookshell() {
     setEditModalOpen(false);
   }
 
+  const IconButton = (props: { onClick: (e: MouseEvent) => void, src: string, alt: string }) => {
+    return (
+      <button 
+        onClick={props.onClick}
+        style={{
+          "width": "32px", 
+          "height": "32px", 
+          "padding": "0px",
+          "border": "lightgray solid 1px",
+          "border-radius": "2px",
+          "justify-content": "center"
+      }}>
+        <img src={props.src} style={{"width": "80%", "height": "auto"}} alt={props.alt}></img>
+      </button>
+    );
+  }
+
+  const TextButton = (props: { onClick: (e: MouseEvent) => void, text: string }) => {
+    return (
+      <button 
+        onClick={props.onClick}
+        style={{
+          "padding": "5px",
+          "border": "lightgray solid 1px",
+          "border-radius": "4px",
+          "white-space": "nowrap"
+      }}>
+        {props.text}
+      </button>
+    );
+  }
+
+
   return (
     <>
       <Header />
@@ -207,8 +240,8 @@ function Bookshell() {
                         <VStack gap="4px">
                           <div style={{"white-space": "nowrap"}}>{isBookAvailable(book.id) ? "貸出可" : "貸出中"}</div>
                           {isBookAvailable(book.id) ?
-                            <button style={{ "white-space": "nowrap" }} onClick={() => openLendModal(book.id)}>貸出</button> :
-                            <button style={{ "white-space": "nowrap" }} onClick={() => openReturnModal(book.id)}>返却</button>
+                            <TextButton onClick={() => openLendModal(book.id)} text="貸出" /> :
+                            <TextButton onClick={() => openReturnModal(book.id)} text="返却" />
                           }
                         </VStack>
                         <details>
@@ -223,12 +256,16 @@ function Bookshell() {
                     </VStack>
                   </HStack>
                   <VStack justify="flex-start" gap="10px">
-                    <button onClick={e=>deleteBook(book)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
-                      <img src="/trash.png" style={{"width": "80%", "height": "auto"}}></img>
-                    </button>
-                    <button onClick={e=>editBook(book.id)} style={{"width": "32px", "height": "32px", "padding": "0px", "justify-content": "center"}}>
-                      <img src="/pencil.png" style={{"width": "80%", "height": "auto"}}></img>
-                    </button>
+                    <IconButton
+                      onClick={e=>deleteBook(book)}
+                      src="/trash.png"
+                      alt="削除"
+                    />
+                    <IconButton
+                      onClick={e=>editBook(book.id)}
+                      src="/pencil.png"
+                      alt="編集"
+                    />
                   </VStack>
                 </HStack>
               </Card>
@@ -236,27 +273,27 @@ function Bookshell() {
           </VStack>
         )}
         <Modal isOpen={isLendModalOpen()} onClose={closeLendModal} title="この本を借りますか？">
-          <div>
-            <div>
-            貸出人
+          <VStack gap="1rem" alignItems="center">
+            <HStack gap="1rem">
+              <div>貸出人</div>
               <input
                 type="text"
                 placeholder="東工 太郎"
                 value={name()}
                 onInput={(e) => setName(e.currentTarget.value)}
               />
-            </div>
-            <div>
-              <button onClick={handleLend}>貸出</button>
-              <button onClick={closeLendModal}>キャンセル</button>
-            </div>
-          </div>
+            </HStack>
+            <HStack gap="1rem">
+              <TextButton onClick={handleLend} text="貸出" />
+              <TextButton onClick={closeLendModal} text="キャンセル" />
+            </HStack>
+          </VStack>
         </Modal>
         <Modal isOpen={isReturnModalOpen()} onClose={closeReturnModal} title="この本を返却しますか？">
-          <div>
-            <button onClick={handleReturn}>返却</button>
-            <button onClick={closeReturnModal}>キャンセル</button>
-          </div>
+          <HStack gap="1rem" alignItems="center" justify="center" width="100%">
+            <TextButton onClick={handleReturn} text="返却" />
+            <TextButton onClick={closeReturnModal} text="キャンセル" />
+          </HStack>
         </Modal>
         <HStack gap="10px" justify="center">
           <button onClick={() => {
