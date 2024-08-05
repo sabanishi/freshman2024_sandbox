@@ -128,36 +128,23 @@ const BookRegister: Component = () => {
         const amazonPageSrc = "https://www.amazon.co.jp/dp/" + isbn10;
         setAmazonPageSrc(amazonPageSrc);
         const url = 'https://corsproxy.io/?' + encodeURIComponent(amazonPageSrc);
+        console.log(url);
         const amazonPageResponse = await fetch(url);
         const amazonPageText = await amazonPageResponse.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(amazonPageText, "text/html");
 
-        //  ".celwidget > .a-expander-collapsed-height .a-expander-content :first-child"
-        let decs1 = fetchDescriptionFromSelector(doc, ".celwidget .celwidget > .a-expander-collapsed-height .a-expander-content");
-        if (decs1 != "") {
-            return decs1;
-        }
-        
-        // .a-expander-collapsed-height .a-expander-content .celwidget > p
-        let decs2 = fetchDescriptionFromSelector(doc, ".a-expander-collapsed-height .a-expander-content .celwidget > p");
-        if (decs2 != "") {
-            return decs2;
-        }
-        
-        // .a-section .a-tab-content .a-expander-collapsed-height .celwidget
-        let decs3 = fetchDescriptionFromSelector(doc, ".a-section .a-tab-content .a-expander-collapsed-height .celwidget");
-        if (decs3 != "") {
-            return decs3;
-        }
-
-        // #dp-container > .celwidget > .a-section:has(.a-section)
-        let decs4 = fetchDescriptionFromSelector(doc, "#dp-container > .celwidget > .a-section > .a-section");
-        if (decs4 != "") {
-            return decs4;
-        }
-
-        return placeholder;
+        const selectors = [
+          ".celwidget .celwidget > .a-expander-collapsed-height .a-expander-content",
+          ".a-expander-collapsed-height .a-expander-content .celwidget > p",
+          ".a-section .a-tab-content .a-expander-collapsed-height .celwidget",
+          ".a-section .a-tab-content .a-expander-collapsed-height .a-section",
+          "#dp-container > .celwidget > .a-section > .a-section",
+      ];
+      
+      let descriptions = selectors.map(selector => fetchDescriptionFromSelector(doc, selector)).filter(desc => desc != "");
+      
+      return descriptions.reduce((a, b) => a.length > b.length ? a : b, "");
     }
 
     /**

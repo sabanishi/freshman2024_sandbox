@@ -9,7 +9,7 @@ const NowLoadingImage:Component<NowLoadingImageProps> = (props:NowLoadingImagePr
     return (
         <>
             {(props.isOpen) && (
-                <div className={styles.loader}></div>
+                <div class={styles.loader}></div>
             )}
         </>
     );
