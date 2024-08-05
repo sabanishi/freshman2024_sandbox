@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import Modal from "./Modal";
 import { HStack, VStack } from "./CommonTool";
 import NowLoadingImage from "./NowLoadingImage";
@@ -18,6 +18,15 @@ const BookEditPanel: Component<BookEditProps> = (props: BookEditProps) => {
   const [author, setAuthor] = createSignal(props.oldData ? props.oldData.authors.join(",") : "");
   const [summary, setSummary] = createSignal(props.oldData ? props.oldData.description : "");
   const [coverUrl, setCoverUrl] = createSignal(props.oldData ? props.oldData.path_to_image : "");
+
+  createEffect(() => {
+    if (props.oldData) {
+      setTitle(props.oldData.title);
+      setAuthor(props.oldData.authors.join(","));
+      setSummary(props.oldData.description);
+      setCoverUrl(props.oldData.path_to_image);
+    }
+  });
 
   const handleSubmit = (event: Event) => {
     event.preventDefault();
