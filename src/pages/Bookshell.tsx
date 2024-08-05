@@ -154,8 +154,10 @@ function Bookshell() {
     }
   }
 
-  const editBook = (id:string) =>{
-    console.log(id);
+  const [editBookData, setEditBookData] = createSignal<BookData | null>(null);
+  const editBook = (bookData: BookData) =>{
+    console.log(bookData);
+    setEditBookData(bookData);
     setEditModalOpen(true);
   }
 
@@ -262,7 +264,7 @@ function Bookshell() {
                       alt="削除"
                     />
                     <IconButton
-                      onClick={e=>editBook(book.id)}
+                      onClick={e=>editBook(book)}
                       src="/pencil.png"
                       alt="編集"
                     />
@@ -309,7 +311,7 @@ function Bookshell() {
         <div style={{ height: "20px" }}></div>
       </VStack>
 
-      <BookEditPanel isOpen={isEditModalOpen()} onClose={closeEditBook}></BookEditPanel>
+      <BookEditPanel oldData={editBookData()} isOpen={isEditModalOpen()} onClose={closeEditBook}></BookEditPanel>
     </>
   );
 }

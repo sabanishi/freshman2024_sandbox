@@ -7,6 +7,7 @@ interface StackProps {
   width?: string;
   height?: string;
   maxwidth?: string;
+  minWidth?: string;
   gap?: string;
   alignItems?: FlexAlignment;
   justify?: FlexJustification;
@@ -45,6 +46,7 @@ export const VStack: ParentComponent<StackProps> = (props) => {
         "flex-direction": 'column',
         width: props.width,
         "max-width": props.maxwidth,
+        "min-width": props.minWidth,
         height: props.height,
         gap: props.gap,
         "align-items": props.alignItems,
